@@ -1,6 +1,7 @@
 import '../core/combat.dart';
 import '../item/item.dart';
 import '../monster/monster.dart';
+import 'ability.dart';
 import 'hero.dart';
 import 'hero_save.dart';
 
@@ -33,6 +34,13 @@ mixin Capability {
 
   /// Gives the capability a chance to adjust the experience earned for killing
   /// [monster].
-  double modifyExperience(Hero hero, Monster monster, double experience) =>
-      experience;
+  double modifyExperienceGain(
+    HeroSave hero,
+    Monster monster,
+    double experience,
+  ) => experience;
+
+  /// Gives the capability a chance to adjust the focus spent when performing
+  /// [ability].
+  int modifyFocusCost(HeroSave hero, Ability ability, int focus) => focus;
 }

@@ -61,8 +61,9 @@ class Races {
           "seeking knowledge more than adventure. But this insatiable desire "
           "for the former, on many occasions, leads them into the jaws of the "
           "latter.",
-      const [
-        // TODO: Come up with race powers.
+      [
+        SingleMinded(),
+        // TODO: Another.
       ],
       {
         Stat.strength: 0.7,
@@ -123,10 +124,35 @@ class QuickStudy extends Power {
   String get name => "Quick Study";
 
   @override
-  String get description => "Gain 10% more experience when killing a monster.";
+  String get description => "Gain 20% more experience when killing a monster.";
 
   @override
-  double modifyExperience(Hero hero, Monster monster, double experience) {
-    return experience * 1.1;
+  double modifyExperienceGain(
+    HeroSave hero,
+    Monster monster,
+    double experience,
+  ) {
+    return experience * 1.2;
+  }
+}
+
+class SingleMinded extends Power {
+  @override
+  String get name => "Single-minded";
+
+  @override
+  String get description =>
+      "Reduce the focus lost when performing an ability by 30%.";
+
+  @override
+  int modifyFocusCost(HeroSave hero, Ability ability, int focus) {
+    if (focus == 0) return 0;
+
+    // Round down so that it always reduces it at least a little, but don't
+    // round down to nothing.
+    focus = (focus * 0.7).floor();
+    if (focus == 0) return 1;
+
+    return focus;
   }
 }

@@ -1,3 +1,4 @@
+import 'package:meta/meta.dart';
 import 'package:piecemeal/piecemeal.dart';
 
 import '../action/action.dart';
@@ -15,7 +16,22 @@ abstract class Ability {
   String get description => 'TODO';
 
   /// The focus cost to use the ability.
-  int focusCost(HeroSave hero) => 0;
+  // TODO: Use nonVirtual in more places.
+  @nonVirtual
+  int focusCost(HeroSave hero) {
+    var cost = onGetFocusCost(hero);
+
+    print("base $cost");
+    for (var capability in hero.capabilities) {
+      cost = capability.modifyFocusCost(hero, this, cost);
+    }
+
+    print("modified to $cost");
+    return cost;
+  }
+
+  /// The base focus cost set by the ability before powers modify it.
+  int onGetFocusCost(HeroSave hero) => 0;
 
   /// If the ability cannot currently be used (for example Archery when a bow
   /// is not equipped), returns the reason why. Otherwise, returns `null` to

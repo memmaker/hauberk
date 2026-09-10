@@ -14,7 +14,7 @@ class FireArrowAbility extends Ability with TargetAbility {
 
   /// Focus cost goes down with level.
   @override
-  int focusCost(HeroSave save) {
+  int onGetFocusCost(HeroSave save) {
     var level = save.skills.level(Archery.instance);
     return 21 - level;
   }

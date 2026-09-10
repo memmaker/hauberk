@@ -257,7 +257,7 @@ class Hero extends Actor {
     experience = experience * 20 / (slain + 19);
 
     for (var capability in save.capabilities) {
-      experience = capability.modifyExperience(this, monster, experience);
+      experience = capability.modifyExperienceGain(save, monster, experience);
     }
 
     grantExperience(experience.ceil());
@@ -372,7 +372,6 @@ class Hero extends Actor {
   /// Spends focus on some useful action.
   void spendFocus(int focus) {
     assert(_focus >= focus);
-
     _focus -= focus;
   }
 

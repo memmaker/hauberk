@@ -180,7 +180,7 @@ class FocusAction extends Action {
   /// The action to perform if the hero has enough focus.
   final Action _action;
 
-  FocusAction(this._focus, this._action);
+  FocusAction(this._focus, this._action) : assert(_focus > 0);
 
   @override
   ActionResult onPerform() {

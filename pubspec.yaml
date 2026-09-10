@@ -4,6 +4,7 @@ environment:
 dependencies:
   malison: '^0.14.0'
   markdown: any
+  meta: any
   path: any
   piecemeal: '^2.0.0'
   web: '^1.1.1'
