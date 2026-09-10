@@ -115,28 +115,28 @@ class StagePanel extends Panel {
         }
       }
 
-      // If the tile is currently visible, show any actor on it.
-      if (tile.isVisible) {
-        if (tile.substance != 0) {
-          if (tile.element == Elements.fire) {
-            char = rng.item(_fireChars);
-            (fore, back) = rng.item(HueSet.fire);
-            _hasAnimatedTile = true;
-          } else if (tile.element == Elements.poison) {
-            var amount = 0.1 + (tile.substance / 255) * 0.9;
-            back = back.blend(lima, amount);
-          }
+      // Show any substance if the tile is visible.
+      if (tile.isVisible && tile.substance != 0) {
+        if (tile.element == Elements.fire) {
+          char = rng.item(_fireChars);
+          (fore, back) = rng.item(HueSet.fire);
+          _hasAnimatedTile = true;
+        } else if (tile.element == Elements.poison) {
+          var amount = 0.1 + (tile.substance / 255) * 0.9;
+          back = back.blend(lima, amount);
         }
       }
 
+      // Show an actor if the hero can see them.
       var actor = game.stage.actorAt(pos);
       var showActor =
-          tile.isVisible ||
-          pos == game.hero.pos ||
-          Debug.showAllMonsters ||
-          actor != null && game.heroCanPerceive(actor);
+          actor != null &&
+          (tile.isVisible ||
+              pos == game.hero.pos ||
+              Debug.showAllMonsters ||
+              game.heroCanPerceive(actor));
 
-      if (showActor && actor != null) {
+      if (showActor) {
         var actorGlyph = actor.appearance;
         if (actorGlyph is Glyph) {
           char = actorGlyph.char;
