@@ -47,16 +47,6 @@ class HeroSave {
 
   final SkillSet skills;
 
-  // TODO: Turn this into acquiredAbilities and notify the player when an
-  // ability's requirements are or are not longer satisfied.
-  /*
-  /// The [Spell]s the [Hero] has learned in the order they learned them.
-  ///
-  /// Note that the [Hero] may not currently "know" all of the spells in this
-  /// list if their [Intellect] has been lowered.
-  final List<Spell> learnedSpells;
-  */
-
   /// How much gold the hero has.
   int gold = 60;
 
@@ -124,7 +114,6 @@ class HeroSave {
        crucible = Inventory(ItemLocation.crucible),
        shops = {},
        skills = SkillSet(),
-       /*learnedSpells = [],*/
        log = Log(),
        lore = Lore() {
     // Give new heroes some starting stat points, allocated randomly based on
@@ -132,20 +121,20 @@ class HeroSave {
     var raceStats = ResourceSet<Stat>();
     for (var stat in Stat.values) {
       // Shift the baseline so that weaker stats get fewer points since they'll
-      // start at 10 anyway.
-      raceStats.add(stat, frequency: race.statScale(stat) - 0.5);
+      // start at 8 anyway.
+      raceStats.add(stat, frequency: race.statScale(stat) - 0.4);
     }
 
     var statPoints = {for (var stat in Stat.values) stat: 0};
-    for (var i = 0; i < Stat.values.length * 2; i++) {
+    for (var i = 0; i < Stat.values.length * 8; i++) {
       var stat = raceStats.choose(0);
       statPoints[stat] = statPoints[stat]! + 1;
     }
 
     // Allocate twice as many points and then divide in half to smooth out the
-    // distribution a little and make it less random.
+    // distribution a little and make it less chaotic.
     for (var stat in [strength, agility, vitality, intellect]) {
-      stat.initialize(this, 10 + (statPoints[stat.stat]!));
+      stat.initialize(this, 8 + (statPoints[stat.stat]! + 1) ~/ 2);
     }
   }
 
@@ -232,17 +221,4 @@ class HeroSave {
 
     return bonus;
   }
-
-  /// Get the current status of the [hero]'s knowledge of [spell].
-  // SpellStatus spellStatus(Spell spell) =>
-  //     switch (learnedSpells.indexOf(spell)) {
-  //       -1 when intellect.spellCount - learnedSpells.length <= 0 =>
-  //         SpellStatus.notEnoughIntellect,
-  //       -1 when spell.spellLevel > skills.level(spell.skill) =>
-  //         SpellStatus.notEnoughSchool,
-  //       -1 => SpellStatus.learnable,
-  //       var spellIndex when spellIndex >= intellect.spellCount =>
-  //         SpellStatus.forgotten,
-  //       _ => SpellStatus.known,
-  //     };
 }

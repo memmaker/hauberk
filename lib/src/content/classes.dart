@@ -1,6 +1,5 @@
 import '../engine.dart';
 import 'item/drops.dart';
-import 'powers.dart';
 import 'skill/skills.dart';
 
 class Classes {
@@ -8,37 +7,45 @@ class Classes {
 
   /// All of the known classes.
   static final List<HeroClass> all = [
-    _class(
+    HeroClass(
       "Adventurer",
-      parseDrop("item"),
       "No special birthright, training, or inclination is needed to become "
           "an adventurer, simply the courage (or foolhardiness) to brave the "
           "wilds and live on one's wits. Adventurers are flexible and "
           "resourceful. They are masters of nothing, but able to learn a "
           "little of everything.",
-      [
-        Foolhardy(),
-        // TODO: Another.
-      ],
       {
         Domains.archery: 5,
         Domains.body: 5,
         Domains.spell: 5,
         Domains.weaponry: 5,
       },
+      [
+        Foolhardy(),
+        // TODO: Another.
+      ],
+      parseDrop("item"),
     ),
 
-    _class(
+    HeroClass(
       "Barbarian",
-      parseDrop("weapon"),
-      "TODO",
+      "It's not that barbarians are "
+          "stupid. Many are, in fact, quite intelligent. It's just that they apply "
+          "most of that intelligence towards deciding which weapon is best "
+          "suited for splitting a monster's head open.\n\n"
+          "Barbarians rely on the might of their bodies and the reassuring heft "
+          "of their weapons. While they aren't above using a little magic "
+          "here and there, they're most comfortable when those supernatural "
+          "forces are safely ensconced in a piece of familiar gear.",
+      {Domains.archery: 1, Domains.body: Skill.baseMax, Domains.weaponry: 5},
       [
         DualWield(),
         // TODO: Another class power.
       ],
-      {Domains.archery: 1, Domains.body: Skill.baseMax, Domains.weaponry: 5},
+      parseDrop("weapon"),
     ),
 
+    /*
     _class(
       "Warrior",
       parseDrop("weapon"),
@@ -76,17 +83,39 @@ class Classes {
       ],
       {Domains.archery: 1, Domains.spell: Skill.baseMax},
     ),
+    */
 
     // TODO: Rogues. Priests. Subclasses.
   ];
 }
 
-HeroClass _class(
-  String name,
-  Drop startingItems,
-  String description,
-  List<Power> powers,
-  Map<Domain, int> domainCaps,
-) {
-  return HeroClass(name, description, domainCaps, powers, startingItems);
+class DualWield extends Power {
+  @override
+  String get name => "Dual Wield";
+
+  @override
+  String get description =>
+      "Attack with a weapon in each hand as effectively as lesser weaklings "
+      "do with only a single weapon in their puny arms.";
+
+  @override
+  double modifyHeft(Hero hero, List<Item> weapons, double totalHeft) {
+    if (weapons.isEmpty) return totalHeft;
+
+    // If dual-wielding, take the average of their total heft.
+    return totalHeft / weapons.length;
+  }
+}
+
+class Foolhardy extends Power {
+  @override
+  String get name => "Foolhardy";
+
+  @override
+  String get description => "An aura of good luck makes you 10% harder to hit.";
+
+  @override
+  Iterable<Defense> defenses(Hero hero) => const [
+    Defense(10, "Your luck protects you!"),
+  ];
 }
