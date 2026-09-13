@@ -8,6 +8,9 @@ class FairyDustAbility extends Ability with ActionAbility {
   String get name => "Fairy Dust";
 
   @override
+  String get description => "TODO";
+
+  @override
   List<Requirement> get requirements => [RaceRequirement(Races.fae)];
 
   @override

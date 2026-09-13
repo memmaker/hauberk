@@ -9,6 +9,10 @@ import '../input.dart';
 import '../widget/draw.dart';
 import 'game_screen.dart';
 
+// TODO: This doesn't look great for unavailable abilities. Should probably
+// just hide them completely here (and get rid of `unusableReason()` and rely
+// on the main AbilityDialog to show users why it's not available.
+
 /// Selects an [Ability] to perform.
 class UseAbilityDialog extends Screen<Input> {
   final GameScreen _gameScreen;

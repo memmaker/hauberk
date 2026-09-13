@@ -14,6 +14,9 @@ class AxeSweepAbility extends Ability with DirectionAbility {
   String get name => "Axe Sweep";
 
   @override
+  String get description => "TODO";
+
+  @override
   final List<Requirement> requirements = [WeaponTypeRequirement("axe")];
 
   @override

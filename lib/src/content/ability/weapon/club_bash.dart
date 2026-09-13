@@ -14,6 +14,9 @@ class ClubBashAbility extends Ability with DirectionAbility {
   String get name => "Club Bash";
 
   @override
+  String get description => "TODO";
+
+  @override
   final List<Requirement> requirements = [WeaponTypeRequirement("club")];
 
   @override

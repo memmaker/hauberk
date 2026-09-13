@@ -11,6 +11,9 @@ class ExperienceDialog extends Screen<Input> {
   final Hero _hero;
   final List<Skill> _skills;
 
+  /// The abilities that require a certain level in some skill.
+  final Map<Skill, Map<int, Ability>> _abilitiesBySkill = {};
+
   int _selectedIndex = 0;
 
   StatBase? get _selectedStat => switch (_selectedIndex) {
@@ -46,7 +49,19 @@ class ExperienceDialog extends Screen<Input> {
     : _skills = [
         for (var skill in content.skills)
           if (_hero.save.heroClass.skillCap(skill) > 0) skill,
-      ];
+      ] {
+    for (var ability in content.abilities) {
+      for (var requirement in ability.requirements) {
+        if (requirement is SkillLevelRequirement) {
+          // Note: Assumes only one ability at any given level.
+          _abilitiesBySkill.putIfAbsent(
+            requirement.skill,
+            () => {},
+          )[requirement.level] = ability;
+        }
+      }
+    }
+  }
 
   @override
   bool handleInput(Input input) {
@@ -207,9 +222,6 @@ class ExperienceDialog extends Screen<Input> {
     required int cost,
     required bool selected,
   }) {
-    // Note that [fullValue] might not be [baseValue] + [bonus] because the
-    // full value is clamped to the allowed range.
-
     var y = i * 2 + 3;
 
     terminal.writeAt(
@@ -240,8 +252,9 @@ class ExperienceDialog extends Screen<Input> {
       _ => UIHue.absent,
     };
 
+    // Note that [fullValue] might not be [baseValue] + [bonus] because the
+    // full value is clamped to the allowed range.
     terminal.writeAt(26, y, bonus.fmt(w: 5, sign: true), bonusColor);
-
     terminal.writeAt(32, y, fullValue.fmt(w: 5), infoColor);
 
     if (baseValue < maxValue) {
@@ -356,7 +369,14 @@ class ExperienceDialog extends Screen<Input> {
     terminal.writeAt(13, 2, baseLevel.fmt(w: 2), UIHue.text);
     terminal.writeAt(16, 2, "/", UIHue.subtext);
     terminal.writeAt(18, 2, maxLevel.fmt(w: 2), UIHue.text);
-    Draw.meter(terminal, 22, 2, 10, baseLevel, maxLevel, red, maroon);
+    for (var i = 0; i < maxLevel; i++) {
+      terminal.drawChar(
+        21 + i * 2,
+        2,
+        CharCode.fullBlock,
+        i < baseLevel ? red : maroon,
+      );
+    }
 
     terminal.writeAt(1, 3, "Equipment:", UIHue.label);
     // TODO: Show individual equipment bonuses.
@@ -367,6 +387,34 @@ class ExperienceDialog extends Screen<Input> {
     terminal.writeAt(16, 4, "/", UIHue.subtext);
     terminal.writeAt(18, 4, Skill.modifiedMax.fmt(w: 2), UIHue.text);
 
+    Draw.text(
+      terminal,
+      x: 1,
+      y: 6,
+      width: terminal.width - 1,
+      skill.description,
+    );
+
+    // Show the abilities this this skill unlocks.
+    if (_abilitiesBySkill[skill] case var abilities?) {
+      terminal.writeAt(1, 12, "Abilities granted:", UIHue.header);
+      var y = 14;
+
+      var entries = abilities.entries.toList();
+      entries.sort((a, b) => a.key.compareTo(b.key));
+
+      for (var entry in entries) {
+        terminal.drawChar(1, y, CharCode.bullet, UIHue.line);
+        terminal.writeAt(
+          3,
+          y,
+          "Level ${entry.key}: ${entry.value.name}",
+          UIHue.text,
+        );
+        y++;
+      }
+    }
+
     void describeLevel(String name, int level, int y) {
       Draw.hLine(terminal, 1, y, terminal.width - 2);
       terminal.writeAt(2, y, " At $name level $level ", UIHue.header);
@@ -374,6 +422,7 @@ class ExperienceDialog extends Screen<Input> {
         > 0 => (skill.levelDescription(level), null),
         _ => ("You haven't learned this skill.", UIHue.disabled),
       };
+
       Draw.text(
         terminal,
         x: 1,
@@ -384,11 +433,11 @@ class ExperienceDialog extends Screen<Input> {
       );
     }
 
-    describeLevel("current", fullLevel, 6);
+    describeLevel("current", fullLevel, 25);
 
     var nextLevel = (baseLevel + 1 + bonus).clamp(0, maxLevel);
     if (nextLevel < maxLevel) {
-      describeLevel("next", nextLevel, 16);
+      describeLevel("next", nextLevel, 35);
     }
   }
 

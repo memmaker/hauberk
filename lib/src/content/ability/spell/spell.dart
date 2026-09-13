@@ -1,89 +1,124 @@
-import 'package:piecemeal/piecemeal.dart';
-
 import '../../../engine.dart';
-import '../../skill/spell_school.dart';
+import '../../skill/arcana.dart';
+
+// TODO: The player should have to spend experience to earn spell abilities.
 
 abstract class Spell extends Ability {
-  SpellSchool get school;
+  List<Arcanum> get arcana;
 
-  /// How difficult the spell is to cast.
-  int get spellLevel;
+  /// The arcanum level needed to cast this spell.
+  int get arcanumLevel;
 
   @override
   List<Requirement> get requirements => [
-    SkillLevelRequirement(school, spellLevel),
+    ArcanaRequirement(arcana, arcanumLevel),
   ];
+
+  /// Gets the effective power of the spell.
+  ///
+  /// Starts at zero when the spell is first made available and goes up as
+  /// additional levels of related arcana are gained.
+  int spellPower(HeroSave hero) {
+    var power = 0;
+
+    // Every level in every arcanum for the spell above the required level
+    // increases the spell's power.
+    for (var arcanum in arcana) {
+      var level = hero.skills.level(arcanum);
+      if (level >= arcanumLevel) power += level;
+    }
+
+    return power;
+  }
 }
 
-class ActionSpell extends Spell with ActionAbility {
-  @override
-  final String name;
+/// Checks that the hero has at least [_level] in one of [_arcana].
+class ArcanaRequirement extends Requirement {
+  final List<Arcanum> _arcana;
+  final int _level;
+
+  ArcanaRequirement(this._arcana, this._level);
 
   @override
-  final String description;
+  String get description =>
+      "You must be at level $_level or higher in ${_describeNames()}.";
 
   @override
-  final int spellLevel;
+  String? check(Game game) {
+    for (var arcanum in _arcana) {
+      if (game.hero.skills.level(arcanum) >= _level) return null;
+    }
 
-  @override
-  final SpellSchool school;
+    return "Not enough ${_describeNames()}";
+  }
 
-  final int _focusCost;
-
-  final Action Function(ActionSpell spell, Game game) _getAction;
-
-  ActionSpell(
-    this.name,
-    this.school,
-    this._getAction, {
-    required this.description,
-    required this.spellLevel,
-    required int focus,
-  }) : _focusCost = focus;
-
-  @override
-  int onGetFocusCost(HeroSave hero) => _focusCost;
-
-  @override
-  Action onGetAction(Game game) => _getAction(this, game);
+  String _describeNames() => switch (_arcana) {
+    [] => throw StateError("Should have at least one arcanum."),
+    [var one] => one.name,
+    [var one, var two] => "${one.name} or ${two.name}",
+    [...var multiple, var last] =>
+      "${multiple.map((arcanum) => arcanum.name).join(", ")}, "
+          "or ${last.name}",
+  };
 }
 
-class TargetSpell extends Spell with TargetAbility {
-  @override
-  final String name;
+// TODO: Bring this back when there is a class for it.
+/*
+TargetSpell(
+  "Brilliant Beam",
+  SpellSchool.sorcery,
+  description: "Emits a blinding beam of radiance.",
+  spellLevel: 2,
+  focus: 24,
+  range: 12,
+  (spell, game, target) {
+    var attack = Attack(
+      Prop("light"),
+      "sear",
+      10,
+      range: spell.range,
+      element: Elements.light,
+    );
+    return RayAction.narrowCone(game.hero.pos, target, attack.createHit());
+  },
+),
+*/
 
-  @override
-  final String description;
-
-  @override
-  final int spellLevel;
-
-  @override
-  final SpellSchool school;
-
-  final int _focusCost;
-
-  final int range;
-
-  final Action Function(TargetSpell spell, Game game, Vec target) _getAction;
-
-  TargetSpell(
-    this.name,
-    this.school,
-    this._getAction, {
-    required this.description,
-    required this.spellLevel,
-    required int focus,
-    required this.range,
-  }) : _focusCost = focus;
-
-  @override
-  int onGetFocusCost(HeroSave hero) => _focusCost;
-
-  @override
-  Action onGetTargetAction(Game game, Vec target) =>
-      _getAction(this, game, target);
-
-  @override
-  int getRange(Game game) => range;
-}
+// TODO: Bring these back when there is a class for them.
+// TODO: These spells are all kind of similar and boring. Might be good if
+// they had some differences. Maybe some could try to teleport specifically
+// far away from monsters, etc.
+/*
+ActionSpell(
+  "Flee",
+  SpellSchool.divination,
+  description: "Teleports the hero a short distance away.",
+  spellLevel: 1,
+  focus: 16,
+  (spell, game) => TeleportAction(8),
+),
+ActionSpell(
+  "Escape",
+  SpellSchool.divination,
+  description: "Teleports the hero away.",
+  spellLevel: 2,
+  focus: 25,
+  (spell, game) => TeleportAction(16),
+),
+ActionSpell(
+  "Disappear",
+  SpellSchool.divination,
+  description: "Moves the hero across the dungeon.",
+  spellLevel: 4,
+  focus: 50,
+  (spell, game) => TeleportAction(100),
+),
+ActionSpell(
+  "Sense Items",
+  SpellSchool.divination,
+  description: "Detect nearby items.",
+  spellLevel: 1,
+  focus: 40,
+  (spell, game) => DetectAction([DetectType.item], 20),
+),
+*/

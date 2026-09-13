@@ -19,7 +19,7 @@ import 'content/stage/town.dart';
 import 'content/tiles.dart';
 import 'engine.dart';
 
-export 'content/skill/spell_school.dart';
+export 'content/skill/arcana.dart';
 
 Content createContent() {
   // Note: The order is significant here. For example, monster drops will

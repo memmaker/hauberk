@@ -12,21 +12,17 @@ abstract class Ability {
   /// The name shown when using the ability.
   String get name;
 
-  // TODO: Make this abstract and make the subclasses fill it in.
-  String get description => 'TODO';
+  String get description;
 
   /// The focus cost to use the ability.
   // TODO: Use nonVirtual in more places.
   @nonVirtual
   int focusCost(HeroSave hero) {
     var cost = onGetFocusCost(hero);
-
-    print("base $cost");
     for (var capability in hero.capabilities) {
       cost = capability.modifyFocusCost(hero, this, cost);
     }
 
-    print("modified to $cost");
     return cost;
   }
 
@@ -45,6 +41,9 @@ abstract class Ability {
     return reasons.join(' ');
   }
 
+  // TODO: Are there ever multiple requirements? If not, make this singular.
+  // (Even if there are, could have a "CompoundRequirement" to handle those
+  // cases.)
   /// The conditions that must be met before this ability is available.
   List<Requirement> get requirements;
 

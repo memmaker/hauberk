@@ -17,8 +17,8 @@ class Classes {
       {
         Domains.archery: 5,
         Domains.body: 5,
-        Domains.spell: 5,
         Domains.weaponry: 5,
+        Domains.matter: 2,
       },
       [
         Foolhardy(),
@@ -43,6 +43,22 @@ class Classes {
         // TODO: Another class power.
       ],
       parseDrop("weapon"),
+    ),
+
+    HeroClass(
+      "Sorceror",
+      "While most rightly fear the awesome power and unpredictability of "
+          "magic, sorcerors see it as a source of personal power and glory. "
+          "Tapping magic in its raw elemental form, untethered to other "
+          "objects or beings is the most dangerous form of spellcasting and "
+          "most sorcerors have the scars to show for it. A small price to pay "
+          "for those with the courage to tangle with the raw forces of the "
+          "universe itself.",
+      {Domains.body: 3, Domains.matter: Skill.baseMax},
+      [
+        // TODO: Class powers.
+      ],
+      parseDrop("item"),
     ),
 
     /*

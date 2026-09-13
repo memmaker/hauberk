@@ -1,18 +1,17 @@
 import '../../engine.dart';
+import 'arcana.dart';
 import 'archery.dart';
 import 'battle_hardening.dart';
 import 'bloodlust.dart';
 import 'mastery.dart';
-import 'spell_school.dart';
 
 class Domains {
   // TODO: Probably don't want a separate domain for this. Should archery even
   // be a skill?
   static const archery = Domain("Archery");
   static const body = Domain("Body");
-  // TODO: Split different kinds of spells into different domains.
-  static const spell = Domain("Spell");
   static const weaponry = Domain("Weaponry");
+  static const matter = Domain("Matter");
 }
 
 class Skills {
@@ -25,11 +24,6 @@ class Skills {
     BattleHardening(),
     Bloodlust(),
 
-    // Spells.
-    SpellSchool.conjuring,
-    SpellSchool.divination,
-    SpellSchool.sorcery,
-
     // Weaponry.
     AxeMastery.instance,
     Bludgeoning.instance,
@@ -37,6 +31,14 @@ class Skills {
     SpearMastery.instance,
     Swordfighting(),
     WhipMastery.instance,
+
+    // Matter.
+    Arcanum.arcing,
+    Arcanum.earthshaping,
+    Arcanum.fireweaving,
+    Arcanum.icewinding,
+    Arcanum.watercoursing,
+    Arcanum.windchasing,
 
     // TODO: More skills:
     // - Passively increases dodge.

@@ -6,6 +6,9 @@ class FlitterAbility extends Ability with ActionAbility {
   String get name => "Flitter";
 
   @override
+  String get description => "TODO";
+
+  @override
   List<Requirement> get requirements => [RaceRequirement(Races.fae)];
 
   @override
@@ -17,6 +20,8 @@ class FlyAction extends Action {
   ActionResult onPerform() {
     var hero = game.hero;
 
+    // TODO: Should this spend focus? Can they immediately perform it again
+    // when it ends or is there a cooldown?
     if (hero.flying.isActive) {
       hero.flying.cancel();
     } else {

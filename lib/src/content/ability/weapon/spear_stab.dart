@@ -14,6 +14,9 @@ class SpearStabAbility extends Ability with DirectionAbility {
   String get name => "Spear Stab";
 
   @override
+  String get description => "TODO";
+
+  @override
   final List<Requirement> requirements = [WeaponTypeRequirement("spear")];
 
   @override

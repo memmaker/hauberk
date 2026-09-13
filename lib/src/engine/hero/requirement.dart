@@ -29,19 +29,19 @@ class RaceRequirement extends Requirement {
 }
 
 class SkillLevelRequirement extends Requirement {
-  final Skill _skill;
-  final int _level;
+  final Skill skill;
+  final int level;
 
-  SkillLevelRequirement(this._skill, this._level);
+  SkillLevelRequirement(this.skill, this.level);
 
   @override
   String get description =>
-      "You must be at level $_level or higher in ${_skill.name}.";
+      "You must be at level $level or higher in ${skill.name}.";
 
   @override
   String? check(Game game) {
-    if (game.hero.skills.level(_skill) >= _level) return null;
-    return "Not enough ${_skill.name}";
+    if (game.hero.skills.level(skill) >= level) return null;
+    return "Not enough ${skill.name}";
   }
 }
 
