@@ -9,7 +9,7 @@ class FlitterAbility extends Ability with ActionAbility {
   String get description => "TODO";
 
   @override
-  List<Requirement> get requirements => [RaceRequirement(Races.fae)];
+  Requirement get requirement => RaceRequirement(Races.fae);
 
   @override
   Action onGetAction(Game game) => FlyAction();

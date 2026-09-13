@@ -10,9 +10,7 @@ abstract class Spell extends Ability {
   int get arcanumLevel;
 
   @override
-  List<Requirement> get requirements => [
-    ArcanaRequirement(arcana, arcanumLevel),
-  ];
+  Requirement get requirement => ArcanaRequirement(arcana, arcanumLevel);
 
   /// Gets the effective power of the spell.
   ///

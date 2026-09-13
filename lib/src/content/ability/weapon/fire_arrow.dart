@@ -13,7 +13,7 @@ class FireArrowAbility extends Ability with TargetAbility {
   String get description => "TODO";
 
   @override
-  final List<Requirement> requirements = [WeaponTypeRequirement("bow")];
+  final Requirement requirement = WeaponTypeRequirement("bow");
 
   /// Focus cost goes down with level.
   @override

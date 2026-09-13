@@ -17,7 +17,7 @@ class SpearStabAbility extends Ability with DirectionAbility {
   String get description => "TODO";
 
   @override
-  final List<Requirement> requirements = [WeaponTypeRequirement("spear")];
+  final Requirement requirement = WeaponTypeRequirement("spear");
 
   @override
   Action onGetDirectionAction(Game game, Direction dir) {

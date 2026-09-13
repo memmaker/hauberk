@@ -51,14 +51,12 @@ class ExperienceDialog extends Screen<Input> {
           if (_hero.save.heroClass.skillCap(skill) > 0) skill,
       ] {
     for (var ability in content.abilities) {
-      for (var requirement in ability.requirements) {
-        if (requirement is SkillLevelRequirement) {
-          // Note: Assumes only one ability at any given level.
-          _abilitiesBySkill.putIfAbsent(
-            requirement.skill,
-            () => {},
-          )[requirement.level] = ability;
-        }
+      if (ability.requirement case SkillLevelRequirement requirement) {
+        // Note: Assumes only one ability at any given level.
+        _abilitiesBySkill.putIfAbsent(
+          requirement.skill,
+          () => {},
+        )[requirement.level] = ability;
       }
     }
   }

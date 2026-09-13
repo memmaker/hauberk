@@ -110,10 +110,10 @@ class Draw {
   }) {
     x ??= 0;
     var lineY = y ?? 0;
-    width ??= terminal.width;
+    width ??= terminal.width - x;
     color ??= UIHue.text;
 
-    var lines = Log.wordWrap(width - x, text);
+    var lines = Log.wordWrap(width, text);
     for (var line in lines) {
       terminal.writeAt(x, lineY++, line, color);
     }

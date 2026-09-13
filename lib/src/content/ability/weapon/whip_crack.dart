@@ -18,7 +18,7 @@ class WhipCrackAbility extends Ability with TargetAbility {
   String get description => "TODO";
 
   @override
-  final List<Requirement> requirements = [WeaponTypeRequirement("whip")];
+  final Requirement requirement = WeaponTypeRequirement("whip");
 
   @override
   int getRange(Game game) => 3;

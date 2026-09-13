@@ -67,22 +67,14 @@ class AbilityDialog extends Screen<Input> {
       var y = i * 2 + 3;
       terminal.writeAt(2, y + 1, row, UIHue.rowSeparator);
 
-      //   var (nameColor, levelColor) = switch (_hero.save.spellStatus(spell)) {
-      //     _ when i == _selectedSpellIndex => (UIHue.highlight, UIHue.highlight),
-      //     SpellStatus.known => (UIHue.selectable, UIHue.text),
-      //     SpellStatus.learnable => (UIHue.selectable, UIHue.text),
-      //     SpellStatus.forgotten ||
-      //     SpellStatus.notEnoughIntellect ||
-      //     SpellStatus.notEnoughSchool => (UIHue.disabled, UIHue.disabled),
-      //   };
-
-      var nameColor = i == _selectedAbilityIndex
-          ? UIHue.highlight
-          : UIHue.selectable;
-
-      var focusColor = i == _selectedAbilityIndex
-          ? UIHue.highlight
-          : UIHue.text;
+      var (nameColor, focusColor) = switch (null) {
+        _ when i == _selectedAbilityIndex => (
+          UIHue.highlight,
+          UIHue.selectable,
+        ),
+        _ when ability.canUse(_game) => (UIHue.selectable, UIHue.text),
+        _ => (UIHue.disabled, UIHue.disabled),
+      };
 
       terminal.writeAt(2, y, ability.name, nameColor);
       terminal.writeAt(
@@ -124,21 +116,15 @@ class AbilityDialog extends Screen<Input> {
     // var y = 12;
     // y += Draw.text(terminal, status, x: 1, y: y, width: terminal.width - 2);
 
-    // Show the requirements.
-    terminal.writeAt(1, 10, "Requirements:", UIHue.header);
-    var y = 12;
-    for (var requirement in ability.requirements) {
-      var (bulletColor, textColor) = requirement.check(_game) == null
-          ? (sherwood, peaGreen)
-          : (maroon, red);
-
-      terminal.drawChar(1, y, CharCode.bullet, bulletColor);
-      for (var line in Log.wordWrap(50, requirement.description)) {
-        terminal.writeAt(3, y++, line, textColor);
-      }
-
-      y++;
-    }
+    // Show the requirement.
+    terminal.writeAt(1, 10, "Requirement:", UIHue.header);
+    Draw.text(
+      terminal,
+      ability.requirement.description,
+      x: 1,
+      y: 12,
+      color: ability.requirement.check(_game) == null ? peaGreen : red,
+    );
 
     terminal.writeAt(1, 32, "Focus cost:", UIHue.label);
     var focusCost = ability.focusCost(_game.hero.save).fmt(w: 3);

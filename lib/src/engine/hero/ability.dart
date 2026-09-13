@@ -30,19 +30,10 @@ abstract class Ability {
   int onGetFocusCost(HeroSave hero) => 0;
 
   /// Whether the ability currently has its requirement met.
-  bool canUse(Game game) {
-    for (var requirement in requirements) {
-      if (requirement.check(game) != null) return false;
-    }
+  bool canUse(Game game) => requirement.check(game) == null;
 
-    return true;
-  }
-
-  // TODO: Are there ever multiple requirements? If not, make this singular.
-  // (Even if there are, could have a "CompoundRequirement" to handle those
-  // cases.)
-  /// The conditions that must be met before this ability is available.
-  List<Requirement> get requirements;
+  /// The condition that must be met before this ability is available.
+  Requirement get requirement;
 
   /// If this skill has a focus cost, wraps [action] in an appropriate action
   /// to spend that.
