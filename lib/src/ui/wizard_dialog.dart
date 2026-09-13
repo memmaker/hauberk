@@ -165,9 +165,10 @@ class WizardDialog extends Screen<Input> {
   }
 
   void _gainExperience() {
-    _game.hero.grantExperience(10000 + (_game.hero.experience ~/ 4));
+    var experience = 10000 + (_game.hero.experience ~/ 4);
+    _game.hero.grantExperience(experience);
     _game.hero.refreshProperties();
-    _game.log.debug("Gave the hero 10,000 experience.");
+    _game.log.debug("Gave the hero ${experience.fmt()} experience.");
   }
 
   void _killAllMonsters() {

@@ -68,8 +68,6 @@ class ClubBashAction extends MasteryAction {
         show("{1} is knocked back!", defender);
         addEvent(EventType.knockBack, pos: actor!.pos + _dir, dir: _dir);
       }
-    } else {
-      addEvent(EventType.pause);
     }
 
     _step++;

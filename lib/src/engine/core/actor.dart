@@ -62,7 +62,6 @@ abstract class Actor extends Thing {
   Motility get motility {
     var result = onGetMotility();
     if (flying.isActive) result |= Motility.fly;
-    print("$this $result");
     return result;
   }
 

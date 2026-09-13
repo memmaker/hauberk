@@ -390,9 +390,7 @@ class GameScreen extends Screen<Input> {
       return;
     }
 
-    if (_stagePanel.update(result.events)) dirty();
-
-    if (result.needsRefresh) dirty();
+    if (_stagePanel.update(result)) dirty();
   }
 
   @override

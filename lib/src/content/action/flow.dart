@@ -32,10 +32,7 @@ class FlowAction extends Action with ElementActionMixin {
   ActionResult onPerform() {
     // Only animate 1/slowness frames.
     _frame = (_frame + 1) % _slowness;
-    if (_frame != 0) {
-      addEvent(EventType.pause);
-      return ActionResult.notDone;
-    }
+    if (_frame != 0) return ActionResult.notDone;
 
     if (_tiles == null) {
       // TODO: Use a different flow that makes diagonal moves more expensive to

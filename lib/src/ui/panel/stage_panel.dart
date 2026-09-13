@@ -53,11 +53,13 @@ class StagePanel extends Panel {
     );
   }
 
-  bool update(Iterable<Event> events) {
+  bool update(UpdateResult result) {
     _frame++;
 
-    for (var event in events) {
-      addEffects(_effects, event);
+    if (result case ProgressUpdateResult(:var events)) {
+      for (var event in events) {
+        addEffects(_effects, event);
+      }
     }
 
     var hadEffects = _effects.isNotEmpty;
@@ -66,7 +68,8 @@ class StagePanel extends Panel {
     // TODO: Re-rendering the entire screen when only animated tiles have
     // changed is pretty rough on CPU usage. Maybe optimize to only redraw the
     // animated tiles if that's all that happened in a turn?
-    return _hasAnimatedTile ||
+    return result is ProgressUpdateResult ||
+        _hasAnimatedTile ||
         hadEffects ||
         _effects.isNotEmpty ||
         _gameScreen.game.hero.dazzle.isActive;

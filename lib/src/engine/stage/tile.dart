@@ -161,6 +161,8 @@ class Tile {
   /// things like light spells.
   int _appliedEmanation = 0;
 
+  /// Increases illumination by [offset].
+  ///
   /// If you call this, make sure to call [Stage.floorEmanationChanged()].
   void addEmanation(int offset) {
     _appliedEmanation = (_appliedEmanation + offset).clamp(
@@ -169,6 +171,9 @@ class Tile {
     );
   }
 
+  /// Raises illumination to [amount] if under it.
+  ///
+  /// If you call this, make sure to call [Stage.floorEmanationChanged()].
   void maxEmanation(int amount) {
     _appliedEmanation = math.max(_appliedEmanation, amount);
   }

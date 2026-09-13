@@ -19,7 +19,6 @@ class IlluminateAction extends RayActionBase {
   void reachTile(Vec pos, num distance) {
     game.stage[pos].maxEmanation(Lighting.emanationForLevel(3));
     game.stage.floorEmanationChanged();
-    addEvent(EventType.pause);
   }
 }
 
@@ -38,8 +37,6 @@ class IlluminateSelfAction extends Action {
   ActionResult onPerform() {
     game.stage[actor!.pos].maxEmanation(Lighting.emanationForLevel(3));
     game.stage.floorEmanationChanged();
-    addEvent(EventType.pause);
-
     return alternate(IlluminateAction(_range, actor!.pos));
   }
 }

@@ -77,25 +77,28 @@ class Game {
     _stage.refreshView();
   }
 
-  GameResult update() {
+  UpdateResult update() {
     var madeProgress = false;
 
     while (true) {
       // Process any ongoing or pending actions.
       while (_actions.isNotEmpty) {
         var action = _actions.first;
-
         var result = action.perform();
+
+        // We processed some action, so even if no events are created by it,
+        // the game state still advanced.
+        madeProgress = true;
 
         // Cascade through the alternates until we hit bottom.
         while (result.alternative != null) {
           _actions.removeFirst();
           action = result.alternative!;
           _actions.addFirst(action);
-
           result = action.perform();
         }
 
+        // If there are reactions, process them before other pending actions.
         while (_reactions.isNotEmpty) {
           var reaction = _reactions.removeLast();
           var result = reaction.perform();
@@ -110,28 +113,30 @@ class Game {
         }
 
         stage.refreshView();
-        madeProgress = true;
 
         if (result.done) {
           _actions.removeFirst();
-
           if (result.succeeded && action.consumesEnergy) {
             action.actor!.finishTurn(action);
             stage.advanceActor();
           }
-
-          // Refresh every time the hero takes a turn.
-          if (action.actor == hero) return makeResult(madeProgress);
         }
 
-        if (_events.isNotEmpty) return makeResult(madeProgress);
+        // Return to the UI so that it can refresh the view when:
+        // - The action isn't done yet, so it must be animating something.
+        // - The hero takes a turn so that every step is visible even if
+        //   nothing else is happening than walking or resting. We don't do
+        //   this for other actors so that all monsters can take steps in
+        //   "parallel".
+        // - There are any other visible events to show.
+        if (!result.done || action.actor == hero || _events.isNotEmpty) {
+          return _madeProgress();
+        }
       }
 
       // If we are in the middle of updating substances, keep working through
       // them.
-      if (_substanceIndex != null) {
-        _updateSubstances();
-      }
+      if (_substanceIndex != null) _updateSubstances();
 
       // If we get here, all pending actions are done, so advance to the next
       // tick until an actor moves.
@@ -140,13 +145,13 @@ class Game {
 
         // If we are still waiting for input for the actor, just return (again).
         if (actor.energy.canTakeTurn && actor.needsInput(this)) {
-          return makeResult(madeProgress);
+          return _makeResult(madeProgress);
         }
 
         if (actor.energy.canTakeTurn || actor.energy.gain(actor.speed)) {
           // If the actor can move now, but needs input from the user, just
           // return so we can wait for it.
-          if (actor.needsInput(this)) return makeResult(madeProgress);
+          if (actor.needsInput(this)) return _makeResult(madeProgress);
 
           _actions.add(actor.getAction(this));
         } else {
@@ -162,10 +167,20 @@ class Game {
             _substanceIndex = 0;
             _updateSubstances();
           }
-          //          trySpawnMonster();
         }
       }
     }
+  }
+
+  UpdateResult _makeResult(bool madeProgress) {
+    if (madeProgress) return _madeProgress();
+    return const WaitingUpdateResult._();
+  }
+
+  UpdateResult _madeProgress() {
+    var result = ProgressUpdateResult(_events);
+    _events.clear();
+    return result;
   }
 
   void addAction(Action action) {
@@ -185,13 +200,6 @@ class Game {
     Direction? dir,
   }) {
     _events.add(Event(type, actor, element ?? Element.none, pos, dir, other));
-  }
-
-  GameResult makeResult(bool madeProgress) {
-    var result = GameResult(madeProgress);
-    result.events.addAll(_events);
-    _events.clear();
-    return result;
   }
 
   /// Whether the hero can currently perceive [actor].
@@ -243,22 +251,23 @@ class Game {
   //  }
 }
 
-/// Each call to [Game.update()] will return a [GameResult] object that tells
-/// the UI what happened during that update and what it needs to do.
-class GameResult {
-  /// The "interesting" events that occurred in this update.
-  final events = <Event>[];
+sealed class UpdateResult {
+  const UpdateResult();
+}
 
-  /// Whether or not any game state has changed. If this is `false`, then no
-  /// game processing has occurred (i.e. the game is stuck waiting for user
-  /// input for the [Hero]).
-  final bool madeProgress;
+/// The game is blocked waiting for user input and nothing has happened.
+final class WaitingUpdateResult extends UpdateResult {
+  const WaitingUpdateResult._();
+}
 
-  /// Returns `true` if the game state has progressed to the point that a change
-  /// should be shown to the user.
-  bool get needsRefresh => madeProgress || events.isNotEmpty;
+/// The game was able to take some action and advance the game state.
+///
+/// The UI in turn needs to draw to show those changes to the player.
+final class ProgressUpdateResult extends UpdateResult {
+  /// The interesting events that occurred in this update.
+  final List<Event> events;
 
-  GameResult(this.madeProgress);
+  ProgressUpdateResult(final List<Event> events) : events = events.toList();
 }
 
 /// Describes a single "interesting" thing that occurred during a call to
@@ -280,8 +289,6 @@ class Event {
 // TODO: Move to content.
 /// A kind of [Event] that has occurred.
 class EventType {
-  static const pause = EventType("pause");
-
   /// One step of a bolt.
   static const bolt = EventType("bolt");
 

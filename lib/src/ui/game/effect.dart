@@ -25,10 +25,6 @@ final _directionLines = {
 /// Adds an [Effect]s that should be displayed when [event] happens.
 void addEffects(List<Effect> effects, Event event) {
   switch (event.type) {
-    case EventType.pause:
-      // Do nothing.
-      break;
-
     case EventType.bolt:
       // TODO: Assumes all none-element bolts are arrows. Do something better?
       if (event.element == Element.none) {

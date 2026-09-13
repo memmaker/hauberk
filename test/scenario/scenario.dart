@@ -132,9 +132,7 @@ class Scenario {
   void playUntilNeedsInput() {
     while (true) {
       _printStage();
-      var result = _game.update();
-      if (!result.madeProgress) break;
-
+      if (_game.update() is WaitingUpdateResult) break;
       _turns++;
     }
 
