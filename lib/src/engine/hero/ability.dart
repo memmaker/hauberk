@@ -29,16 +29,13 @@ abstract class Ability {
   /// The base focus cost set by the ability before powers modify it.
   int onGetFocusCost(HeroSave hero) => 0;
 
-  /// If the ability cannot currently be used (for example Archery when a bow
-  /// is not equipped), returns the reason why. Otherwise, returns `null` to
-  /// indicate the ability is usable.
-  String? unusableReason(Game game) {
-    var reasons = [
-      for (var requirement in requirements) ?requirement.check(game),
-    ];
+  /// Whether the ability currently has its requirement met.
+  bool canUse(Game game) {
+    for (var requirement in requirements) {
+      if (requirement.check(game) != null) return false;
+    }
 
-    if (reasons.isEmpty) return null;
-    return reasons.join(' ');
+    return true;
   }
 
   // TODO: Are there ever multiple requirements? If not, make this singular.
