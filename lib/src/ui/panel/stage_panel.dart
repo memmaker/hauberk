@@ -8,7 +8,7 @@ import '../../content/elements.dart';
 import '../../debug.dart';
 import '../../engine.dart';
 import '../../hues.dart';
-import '../game/effect.dart';
+import '../effect/effect.dart';
 import '../game/game_screen.dart';
 import 'panel.dart';
 

@@ -3,8 +3,8 @@ import 'package:piecemeal/piecemeal.dart';
 import '../../engine.dart';
 import '../events.dart';
 
-/// Fires a bolt, a straight line of an elemental attack that stops at the
-/// first [Actor] is hits or opaque tile.
+/// Fires a straight line of an attack that stops at the first [Actor] or solid
+/// tile that it hits.
 class BoltAction extends LosAction {
   final Hit _hit;
   final bool _canMiss;
@@ -29,9 +29,6 @@ class BoltAction extends LosAction {
 
   @override
   bool onHitActor(Vec pos, Actor target) {
-    // TODO: Should range increase odds of missing? If so, do that here. Also
-    // need to tweak enemy AI then since they shouldn't always try to maximize
-    // distance.
     _hit.perform(this, actor, target, canMiss: _canMiss);
     return true;
   }

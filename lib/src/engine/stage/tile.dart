@@ -121,9 +121,8 @@ class Tile {
   /// Whether some other opaque tile is blocking the hero's view of this tile.
   ///
   /// This gets updated by [Fov] as the hero moves around.
-  bool _isOccluded = false;
-
   bool get isOccluded => _isOccluded;
+  bool _isOccluded = false;
 
   /// How much visibility is reduced by distance fall-off.
   int get fallOff => _fallOff;
