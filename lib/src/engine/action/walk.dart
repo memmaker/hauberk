@@ -1,7 +1,7 @@
 import 'package:piecemeal/piecemeal.dart';
 
 import '../core/actor.dart';
-import '../core/game.dart';
+import '../core/event.dart';
 import '../hero/hero.dart';
 import '../stage/sound.dart';
 import '../stage/tile.dart';

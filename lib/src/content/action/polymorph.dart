@@ -1,6 +1,7 @@
 import 'package:piecemeal/piecemeal.dart';
 
 import '../../engine.dart';
+import '../events.dart';
 
 // TODO: Use this for more things.
 // - Monsters that have a "final form" when killed.
@@ -14,7 +15,7 @@ class PolymorphAction extends Action {
   @override
   ActionResult onPerform() {
     monster.breed = _breed;
-    addEvent(EventType.polymorph, actor: actor);
+    addEvent(EventTypes.polymorph, actor: actor);
 
     // TODO: Message?
     return ActionResult.success;
@@ -52,7 +53,7 @@ class AmputateAction extends Action {
       game.stage.addActor(part);
 
       // TODO: Different event?
-      addEvent(EventType.spawn, actor: part);
+      addEvent(EventTypes.spawn, actor: part);
     }
 
     return ActionResult.success;

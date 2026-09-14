@@ -1,6 +1,7 @@
 import 'package:piecemeal/piecemeal.dart';
 
 import '../../engine.dart';
+import '../events.dart';
 import '../item/drops.dart';
 import '../tiles.dart';
 
@@ -24,7 +25,7 @@ abstract class _OpenTileAction extends Action {
   @override
   ActionResult onPerform() {
     game.stage[_pos].type = _openTile;
-    addEvent(EventType.openBarrel, pos: _pos);
+    addEvent(EventTypes.openBarrel, pos: _pos);
 
     // TODO: Chance of monster in it?
     // TODO: Traps. Locks.

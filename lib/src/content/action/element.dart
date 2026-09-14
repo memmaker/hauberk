@@ -5,6 +5,7 @@ import 'package:piecemeal/piecemeal.dart';
 
 import '../../engine.dart';
 import '../elements.dart';
+import '../events.dart';
 import '../tiles.dart';
 
 mixin ElementActionMixin implements Action {
@@ -14,7 +15,7 @@ mixin ElementActionMixin implements Action {
     // hits should be able to operate tiles or not and, if so, how we know when
     // they should.
 
-    addEvent(EventType.cone, element: hit.element, pos: pos);
+    addEvent(EventTypes.cone, element: hit.element, pos: pos);
 
     // See if there is an actor there.
     var target = game.stage.actorAt(pos);
@@ -207,7 +208,7 @@ class WindAction extends Action {
     if (positions.isEmpty) return ActionResult.failure;
 
     show("{1} [are|is] thrown by the wind!", actor);
-    addEvent(EventType.wind, actor: actor, pos: actor!.pos);
+    addEvent(EventTypes.wind, actor: actor, pos: actor!.pos);
     moveActor(actor!, rng.item(positions));
 
     return ActionResult.success;

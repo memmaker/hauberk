@@ -8,6 +8,7 @@ import '../core/actor.dart';
 import '../core/combat.dart';
 import '../core/element.dart';
 import '../core/energy.dart';
+import '../core/event.dart';
 import '../core/game.dart';
 import '../core/math.dart';
 import '../core/thing.dart';

@@ -1,6 +1,7 @@
 import 'package:piecemeal/piecemeal.dart';
 
 import '../../engine.dart';
+import '../events.dart';
 
 /// An [Action] that flows out and maps tiles within a certain distance.
 class MappingAction extends Action {
@@ -28,7 +29,7 @@ class MappingAction extends Action {
 
       for (var pos in _tilesByDistance[_currentDistance]) {
         game.stage.explore(pos, force: true);
-        addEvent(EventType.map, pos: pos);
+        addEvent(EventTypes.map, pos: pos);
 
         if (_illuminate) {
           game.stage[pos].addEmanation(255);

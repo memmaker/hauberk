@@ -6,6 +6,7 @@ import 'combat.dart';
 import 'condition.dart';
 import 'element.dart';
 import 'energy.dart';
+import 'event.dart';
 import 'game.dart';
 import 'thing.dart';
 

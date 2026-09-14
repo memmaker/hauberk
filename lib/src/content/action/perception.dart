@@ -1,4 +1,5 @@
 import '../../engine.dart';
+import '../events.dart';
 
 /// An [Action] that gives the hero temporary monster perception.
 class PerceiveAction extends Action {
@@ -27,7 +28,7 @@ class PerceiveAction extends Action {
       if (actor == hero) continue;
 
       if (game.heroCanPerceive(actor) && !alreadyPerceived.contains(actor)) {
-        addEvent(EventType.perceive, actor: actor);
+        addEvent(EventTypes.perceive, actor: actor);
         perceived = true;
       }
     }

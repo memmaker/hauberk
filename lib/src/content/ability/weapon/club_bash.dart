@@ -1,6 +1,7 @@
 import 'package:piecemeal/piecemeal.dart';
 
 import '../../../engine.dart';
+import '../../events.dart';
 import '../../skill/mastery.dart';
 import '../mastery.dart';
 
@@ -66,7 +67,7 @@ class ClubBashAction extends MasteryAction {
         moveActor(defender, dest);
         defender.energy.energy = 0;
         show("{1} is knocked back!", defender);
-        addEvent(EventType.knockBack, pos: actor!.pos + _dir, dir: _dir);
+        addEvent(EventTypes.knockBack, pos: actor!.pos + _dir, dir: _dir);
       }
     }
 

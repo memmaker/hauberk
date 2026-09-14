@@ -19,6 +19,8 @@ import 'content/stage/town.dart';
 import 'content/tiles.dart';
 import 'engine.dart';
 
+export 'content/elements.dart';
+export 'content/events.dart';
 export 'content/skill/arcana.dart';
 
 Content createContent() {

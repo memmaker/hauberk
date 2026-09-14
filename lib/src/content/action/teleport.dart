@@ -1,6 +1,7 @@
 import 'package:piecemeal/piecemeal.dart';
 
 import '../../engine.dart';
+import '../events.dart';
 
 /// Teleports to a random tile with a given range.
 class TeleportAction extends Action {
@@ -43,7 +44,7 @@ class TeleportAction extends Action {
 
     var from = actor!.pos;
     moveActor(actor!, best);
-    addEvent(EventType.teleport, actor: actor, pos: from);
+    addEvent(EventTypes.teleport, actor: actor, pos: from);
     return succeed('{1} teleport[s]!', actor);
   }
 }

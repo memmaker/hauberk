@@ -2,7 +2,7 @@ import 'package:piecemeal/piecemeal.dart';
 
 import '../core/actor.dart';
 import '../core/combat.dart';
-import '../core/game.dart';
+import '../core/event.dart';
 import '../item/item.dart';
 import 'action.dart';
 import 'item.dart';

@@ -1,6 +1,7 @@
 import 'package:piecemeal/piecemeal.dart';
 
 import '../../engine.dart';
+import '../events.dart';
 
 /// Fires a bolt, a straight line of an elemental attack that stops at the
 /// first [Actor] is hits or opaque tile.
@@ -19,7 +20,7 @@ class BoltAction extends LosAction {
   @override
   void onStep(Vec previous, Vec pos) {
     addEvent(
-      EventType.bolt,
+      EventTypes.bolt,
       element: _hit.element,
       pos: pos,
       dir: (pos - previous).nearestDirection,

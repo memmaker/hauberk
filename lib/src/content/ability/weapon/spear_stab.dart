@@ -1,6 +1,7 @@
 import 'package:piecemeal/piecemeal.dart';
 
 import '../../../engine.dart';
+import '../../events.dart';
 import '../../skill/mastery.dart';
 import '../mastery.dart';
 
@@ -63,7 +64,7 @@ class SpearStabAction extends MasteryAction with GeneratorActionMixin {
       // ensures the effect gets a chance to be shown before the hit effect
       //  covers hit.
       var weapon = hero.equipment.weapons.first.appearance;
-      addEvent(EventType.stab, pos: pos, dir: _dir, other: weapon);
+      addEvent(EventTypes.stab, pos: pos, dir: _dir, other: weapon);
       yield waitOne();
 
       attack(pos);

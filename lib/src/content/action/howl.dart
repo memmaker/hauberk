@@ -1,4 +1,5 @@
 import '../../engine.dart';
+import '../events.dart';
 
 /// Alert nearby sleeping monsters.
 class HowlAction extends Action {
@@ -10,7 +11,7 @@ class HowlAction extends Action {
   @override
   ActionResult onPerform() {
     show("{1} $_verb!", actor);
-    addEvent(EventType.howl, actor: actor);
+    addEvent(EventTypes.howl, actor: actor);
 
     for (var other in game.stage.actors) {
       if (other != actor &&

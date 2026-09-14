@@ -8,8 +8,8 @@ import '../hero/hero_save.dart';
 import '../stage/stage.dart';
 import 'actor.dart';
 import 'content.dart';
-import 'element.dart';
 import 'energy.dart';
+import 'event.dart';
 import 'log.dart';
 
 /// Root class for the game engine. All game state is contained within this.
@@ -191,15 +191,8 @@ class Game {
     }
   }
 
-  void addEvent(
-    EventType type, {
-    Actor? actor,
-    Element? element,
-    Object? other,
-    Vec? pos,
-    Direction? dir,
-  }) {
-    _events.add(Event(type, actor, element ?? Element.none, pos, dir, other));
+  void addEvent(Event event) {
+    _events.add(event);
   }
 
   /// Whether the hero can currently perceive [actor].
@@ -268,93 +261,4 @@ final class ProgressUpdateResult extends UpdateResult {
   final List<Event> events;
 
   ProgressUpdateResult(final List<Event> events) : events = events.toList();
-}
-
-/// Describes a single "interesting" thing that occurred during a call to
-/// [Game.update()]. In general, events correspond to things that a UI is likely
-/// to want to display visually in some form.
-class Event {
-  final EventType type;
-  // TODO: Having these all be nullable leads to a lot of "!" in effects.
-  // Consider a better way to model this.
-  final Actor? actor;
-  final Element element;
-  final Object? other;
-  final Vec? pos;
-  final Direction? dir;
-
-  Event(this.type, this.actor, this.element, this.pos, this.dir, this.other);
-}
-
-// TODO: Move to content.
-/// A kind of [Event] that has occurred.
-class EventType {
-  /// One step of a bolt.
-  static const bolt = EventType("bolt");
-
-  /// The leading edge of a cone.
-  static const cone = EventType("cone");
-
-  /// A thrown item in flight.
-  static const toss = EventType("toss");
-
-  /// An [Actor] was hit.
-  static const hit = EventType("hit");
-
-  /// An [Actor] died.
-  static const die = EventType("die");
-
-  /// An [Actor] was healed.
-  static const heal = EventType("heal");
-
-  /// Something in the level was detected.
-  static const detect = EventType("detect");
-
-  /// An actor was perceived.
-  static const perceive = EventType("perceive");
-
-  /// A floor tile was magically explored.
-  static const map = EventType("map");
-
-  /// An [Actor] teleported.
-  static const teleport = EventType("teleport");
-
-  /// A new [Actor] was spawned by another.
-  static const spawn = EventType("spawn");
-
-  /// [Actor] has polymorphed into another breed.
-  static const polymorph = EventType("polymorph");
-
-  /// An [Actor] howls.
-  static const howl = EventType("howl");
-
-  /// An [Actor] wakes up.
-  static const awaken = EventType("awaken");
-
-  /// An [Actor] becomes afraid.
-  static const frighten = EventType("frighten");
-
-  /// An [Actor] was blown by wind.
-  static const wind = EventType("wind");
-
-  /// A club's bash attack moves an actor.
-  static const knockBack = EventType("knockBack");
-
-  /// An axe's slash attack hits a tile.
-  static const slash = EventType("slash");
-
-  /// A spear's stab attack hits a tile.
-  static const stab = EventType("stab");
-
-  /// The hero picks up gold worth [Event.other].
-  static const gold = EventType("gold");
-
-  static const openBarrel = EventType("openBarrel");
-
-  final String _name;
-
-  const EventType(this._name);
-
-  @override
-  String toString() => _name;
 }

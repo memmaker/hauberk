@@ -3,8 +3,7 @@ import 'dart:math' as math;
 import 'package:malison/malison.dart';
 import 'package:piecemeal/piecemeal.dart';
 
-// TODO: Directly importing this is a little hacky. Put "appearance" on Element?
-import '../../content/elements.dart';
+import '../../content.dart';
 import '../../engine.dart';
 import '../../hues.dart';
 
@@ -25,7 +24,7 @@ final _directionLines = {
 /// Adds an [Effect]s that should be displayed when [event] happens.
 void addEffects(List<Effect> effects, Event event) {
   switch (event.type) {
-    case EventType.bolt:
+    case EventTypes.bolt:
       // TODO: Assumes all none-element bolts are arrows. Do something better?
       if (event.element == Element.none) {
         var char = const {
@@ -44,7 +43,7 @@ void addEffects(List<Effect> effects, Event event) {
         effects.add(ElementEffect(event.pos!, event.element));
       }
 
-    case EventType.cone:
+    case EventTypes.cone:
       effects.add(ElementEffect(event.pos!, event.element));
 
     case EventType.toss:
@@ -64,34 +63,34 @@ void addEffects(List<Effect> effects, Event event) {
         );
       }
 
-    case EventType.heal:
+    case EventTypes.heal:
       effects.add(HealEffect(event.actor!.pos.x, event.actor!.pos.y));
 
-    case EventType.detect:
+    case EventTypes.detect:
       effects.add(DetectEffect(event.pos!));
 
-    case EventType.perceive:
+    case EventTypes.perceive:
       // TODO: Make look different.
       effects.add(DetectEffect(event.actor!.pos));
 
-    case EventType.map:
+    case EventTypes.map:
       effects.add(MapEffect(event.pos!));
 
-    case EventType.teleport:
+    case EventTypes.teleport:
       var numParticles = (event.actor!.pos - event.pos!).kingLength * 2;
       for (var i = 0; i < numParticles; i++) {
         effects.add(TeleportEffect(event.pos!, event.actor!.pos));
       }
 
-    case EventType.spawn:
+    case EventTypes.spawn:
       // TODO: Something more interesting.
       effects.add(FrameEffect(event.actor!.pos, '*', lighterCoolGray));
 
-    case EventType.polymorph:
+    case EventTypes.polymorph:
       // TODO: Something more interesting.
       effects.add(FrameEffect(event.actor!.pos, '*', lighterCoolGray));
 
-    case EventType.howl:
+    case EventTypes.howl:
       effects.add(HowlEffect(event.actor!));
 
     case EventType.awaken:
@@ -100,16 +99,16 @@ void addEffects(List<Effect> effects, Event event) {
     case EventType.frighten:
       effects.add(BlinkEffect(event.actor!, Glyph("!", gold), 3));
 
-    case EventType.wind:
+    case EventTypes.wind:
       // TODO: Do something.
       break;
 
-    case EventType.knockBack:
+    case EventTypes.knockBack:
       // TODO: Something more interesting.
       effects.add(FrameEffect(event.pos!, "*", buttermilk));
 
-    case EventType.slash:
-    case EventType.stab:
+    case EventTypes.slash:
+    case EventTypes.stab:
       var line = _directionLines[event.dir]!;
 
       var color = lighterCoolGray;
@@ -124,7 +123,7 @@ void addEffects(List<Effect> effects, Event event) {
     case EventType.gold:
       effects.add(TreasureEffect(event.pos!, event.other as Item));
 
-    case EventType.openBarrel:
+    case EventTypes.openBarrel:
       effects.add(FrameEffect(event.pos!, '*', sandal));
   }
 }

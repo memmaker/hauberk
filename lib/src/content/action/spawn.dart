@@ -1,6 +1,7 @@
 import 'package:piecemeal/piecemeal.dart';
 
 import '../../engine.dart';
+import '../events.dart';
 
 /// Spawns a new [Monster] of a given [Breed].
 class SpawnAction extends Action {
@@ -23,7 +24,7 @@ class SpawnAction extends Action {
     var spawned = _breed.spawn(_pos, monster);
     game.stage.addActor(spawned);
 
-    addEvent(EventType.spawn, actor: spawned);
+    addEvent(EventTypes.spawn, actor: spawned);
 
     // TODO: Message?
     return ActionResult.success;

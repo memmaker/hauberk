@@ -2,6 +2,7 @@ import 'package:piecemeal/piecemeal.dart';
 
 import '../core/actor.dart';
 import '../core/element.dart';
+import '../core/event.dart';
 import '../core/game.dart';
 import '../core/thing.dart';
 import '../hero/hero.dart';
@@ -83,12 +84,7 @@ abstract class Action {
     Direction? dir,
   }) {
     _game.addEvent(
-      type,
-      actor: actor,
-      element: element,
-      pos: pos,
-      dir: dir,
-      other: other,
+      Event(type, actor, element ?? Element.none, pos, dir, other),
     );
   }
 

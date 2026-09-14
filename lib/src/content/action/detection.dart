@@ -1,6 +1,7 @@
 import 'package:piecemeal/piecemeal.dart';
 
 import '../../engine.dart';
+import '../events.dart';
 import '../tiles.dart';
 
 enum DetectType { exit, item }
@@ -27,7 +28,7 @@ class DetectAction extends Action {
 
     for (var pos in _tilesByDistance.removeLast()) {
       game.stage.explore(pos, force: true);
-      addEvent(EventType.detect, pos: pos);
+      addEvent(EventTypes.detect, pos: pos);
     }
 
     return ActionResult.notDone;

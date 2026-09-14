@@ -1,4 +1,5 @@
 import '../../engine.dart';
+import '../events.dart';
 
 /// Heals the [Actor] performing the action.
 class HealAction extends Action {
@@ -19,7 +20,7 @@ class HealAction extends Action {
 
     if (actor!.health != actor!.maxHealth && amount > 0) {
       actor!.health += amount;
-      addEvent(EventType.heal, actor: actor, other: amount);
+      addEvent(EventTypes.heal, actor: actor, other: amount);
       show('{1} feel[s] better.', actor);
       changed = true;
     }

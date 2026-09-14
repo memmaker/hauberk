@@ -8,7 +8,7 @@ import '../core/utils.dart';
 import '../hero/hero.dart';
 import 'actor.dart';
 import 'element.dart';
-import 'game.dart';
+import 'event.dart';
 import 'thing.dart';
 
 /// Armor reduces damage by an inverse curve such that increasing armor has

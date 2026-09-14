@@ -10,6 +10,7 @@ export 'engine/core/condition.dart';
 export 'engine/core/content.dart';
 export 'engine/core/element.dart';
 export 'engine/core/energy.dart';
+export 'engine/core/event.dart';
 export 'engine/core/game.dart';
 export 'engine/core/log.dart';
 export 'engine/core/math.dart';
