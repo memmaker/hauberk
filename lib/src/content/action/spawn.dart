@@ -24,7 +24,7 @@ class SpawnAction extends Action {
     var spawned = _breed.spawn(_pos, monster);
     game.stage.addActor(spawned);
 
-    addEvent(EventTypes.spawn, actor: spawned);
+    addEvent(Events.spawn, actor: spawned);
 
     // TODO: Message?
     return ActionResult.success;

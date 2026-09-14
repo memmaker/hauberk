@@ -20,7 +20,7 @@ class BoltAction extends LosAction {
   @override
   void onStep(Vec previous, Vec pos) {
     addEvent(
-      EventTypes.bolt,
+      Events.bolt,
       element: _hit.element,
       pos: pos,
       dir: (pos - previous).nearestDirection,

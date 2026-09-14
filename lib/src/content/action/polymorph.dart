@@ -15,7 +15,7 @@ class PolymorphAction extends Action {
   @override
   ActionResult onPerform() {
     monster.breed = _breed;
-    addEvent(EventTypes.polymorph, actor: actor);
+    addEvent(Events.polymorph, actor: actor);
 
     // TODO: Message?
     return ActionResult.success;
@@ -53,7 +53,7 @@ class AmputateAction extends Action {
       game.stage.addActor(part);
 
       // TODO: Different event?
-      addEvent(EventTypes.spawn, actor: part);
+      addEvent(Events.spawn, actor: part);
     }
 
     return ActionResult.success;

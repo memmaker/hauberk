@@ -24,7 +24,7 @@ final _directionLines = {
 /// Adds an [Effect]s that should be displayed when [event] happens.
 void addEffects(List<Effect> effects, Event event) {
   switch (event.type) {
-    case EventTypes.bolt:
+    case Events.bolt:
       // TODO: Assumes all none-element bolts are arrows. Do something better?
       if (event.element == Element.none) {
         var char = const {
@@ -38,21 +38,19 @@ void addEffects(List<Effect> effects, Event event) {
           Direction.w: "-",
           Direction.nw: "\\",
         }[event.dir]!;
-        effects.add(FrameEffect(event.pos!, char, sandal, life: 2));
+        effects.add(FrameEffect(event.pos, char, sandal, life: 2));
       } else {
-        effects.add(ElementEffect(event.pos!, event.element));
+        effects.add(ElementEffect(event.pos, event.element));
       }
 
-    case EventTypes.cone:
-      effects.add(ElementEffect(event.pos!, event.element));
+    case Events.cone:
+      effects.add(ElementEffect(event.pos, event.element));
 
     case EventType.toss:
-      effects.add(ItemEffect(event.pos!, event.other as Item));
+      effects.add(ItemEffect(event.pos, event.item!));
 
     case EventType.hit:
-      effects.add(
-        DamageEffect(event.actor!, event.element, event.other as int),
-      );
+      effects.add(DamageEffect(event.actor!, event.element, event.amount));
 
     case EventType.die:
       // TODO: Make number of particles vary based on monster health.
@@ -63,34 +61,34 @@ void addEffects(List<Effect> effects, Event event) {
         );
       }
 
-    case EventTypes.heal:
+    case Events.heal:
       effects.add(HealEffect(event.actor!.pos.x, event.actor!.pos.y));
 
-    case EventTypes.detect:
-      effects.add(DetectEffect(event.pos!));
+    case Events.detect:
+      effects.add(DetectEffect(event.pos));
 
-    case EventTypes.perceive:
+    case Events.perceive:
       // TODO: Make look different.
       effects.add(DetectEffect(event.actor!.pos));
 
-    case EventTypes.map:
-      effects.add(MapEffect(event.pos!));
+    case Events.map:
+      effects.add(MapEffect(event.pos));
 
-    case EventTypes.teleport:
-      var numParticles = (event.actor!.pos - event.pos!).kingLength * 2;
+    case Events.teleport:
+      var numParticles = (event.actor!.pos - event.pos).kingLength * 2;
       for (var i = 0; i < numParticles; i++) {
-        effects.add(TeleportEffect(event.pos!, event.actor!.pos));
+        effects.add(TeleportEffect(event.pos, event.actor!.pos));
       }
 
-    case EventTypes.spawn:
+    case Events.spawn:
       // TODO: Something more interesting.
       effects.add(FrameEffect(event.actor!.pos, '*', lighterCoolGray));
 
-    case EventTypes.polymorph:
+    case Events.polymorph:
       // TODO: Something more interesting.
       effects.add(FrameEffect(event.actor!.pos, '*', lighterCoolGray));
 
-    case EventTypes.howl:
+    case Events.howl:
       effects.add(HowlEffect(event.actor!));
 
     case EventType.awaken:
@@ -99,32 +97,32 @@ void addEffects(List<Effect> effects, Event event) {
     case EventType.frighten:
       effects.add(BlinkEffect(event.actor!, Glyph("!", gold), 3));
 
-    case EventTypes.wind:
+    case Events.wind:
       // TODO: Do something.
       break;
 
-    case EventTypes.knockBack:
+    case Events.knockBack:
       // TODO: Something more interesting.
-      effects.add(FrameEffect(event.pos!, "*", buttermilk));
+      effects.add(FrameEffect(event.pos, "*", buttermilk));
 
-    case EventTypes.slash:
-    case EventTypes.stab:
+    case Events.slash:
+    case Events.stab:
       var line = _directionLines[event.dir]!;
 
       var color = lighterCoolGray;
-      if (event.other != null) {
-        color = (event.other as Glyph).fore;
+      if (event.item case var item?) {
+        color = (item.appearance as Glyph).fore;
       }
       // TODO: If monsters starting using this, we'll need some other way to
       // color it.
 
-      effects.add(FrameEffect(event.pos!, line, color));
+      effects.add(FrameEffect(event.pos, line, color));
 
     case EventType.gold:
-      effects.add(TreasureEffect(event.pos!, event.other as Item));
+      effects.add(TreasureEffect(event.pos, event.item!));
 
-    case EventTypes.openBarrel:
-      effects.add(FrameEffect(event.pos!, '*', sandal));
+    case Events.openBarrel:
+      effects.add(FrameEffect(event.pos, '*', sandal));
   }
 }
 

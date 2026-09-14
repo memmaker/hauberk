@@ -28,7 +28,7 @@ class DetectAction extends Action {
 
     for (var pos in _tilesByDistance.removeLast()) {
       game.stage.explore(pos, force: true);
-      addEvent(EventTypes.detect, pos: pos);
+      addEvent(Events.detect, pos: pos);
     }
 
     return ActionResult.notDone;

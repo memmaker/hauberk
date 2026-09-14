@@ -15,7 +15,7 @@ mixin ElementActionMixin implements Action {
     // hits should be able to operate tiles or not and, if so, how we know when
     // they should.
 
-    addEvent(EventTypes.cone, element: hit.element, pos: pos);
+    addEvent(Events.cone, element: hit.element, pos: pos);
 
     // See if there is an actor there.
     var target = game.stage.actorAt(pos);
@@ -208,7 +208,7 @@ class WindAction extends Action {
     if (positions.isEmpty) return ActionResult.failure;
 
     show("{1} [are|is] thrown by the wind!", actor);
-    addEvent(EventTypes.wind, actor: actor, pos: actor!.pos);
+    addEvent(Events.wind, actor: actor, pos: actor!.pos);
     moveActor(actor!, rng.item(positions));
 
     return ActionResult.success;

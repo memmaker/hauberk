@@ -29,7 +29,7 @@ class MappingAction extends Action {
 
       for (var pos in _tilesByDistance[_currentDistance]) {
         game.stage.explore(pos, force: true);
-        addEvent(EventTypes.map, pos: pos);
+        addEvent(Events.map, pos: pos);
 
         if (_illuminate) {
           game.stage[pos].addEmanation(255);

@@ -70,7 +70,7 @@ class WalkAction extends Action {
           show("{1} pick[s] up {2} worth $value gold.", hero, item);
           game.stage.removeItem(item, pos);
 
-          addEvent(EventType.gold, actor: actor, pos: actor!.pos, other: item);
+          addEvent(EventType.gold, actor: actor, pos: actor!.pos, item: item);
         } else {
           show('{1} [are|is] standing on {2}.', actor, item);
         }

@@ -25,7 +25,7 @@ abstract class _OpenTileAction extends Action {
   @override
   ActionResult onPerform() {
     game.stage[_pos].type = _openTile;
-    addEvent(EventTypes.openBarrel, pos: _pos);
+    addEvent(Events.openBarrel, pos: _pos);
 
     // TODO: Chance of monster in it?
     // TODO: Traps. Locks.

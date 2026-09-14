@@ -6,6 +6,7 @@ import '../core/event.dart';
 import '../core/game.dart';
 import '../core/thing.dart';
 import '../hero/hero.dart';
+import '../item/item.dart';
 import '../monster/monster.dart';
 import '../stage/sound.dart';
 
@@ -77,14 +78,23 @@ abstract class Action {
 
   void addEvent(
     EventType type, {
-    Actor? actor,
     Element? element,
-    Object? other,
     Vec? pos,
     Direction? dir,
+    Actor? actor,
+    Item? item,
+    int? amount,
   }) {
     _game.addEvent(
-      Event(type, actor, element ?? Element.none, pos, dir, other),
+      Event(
+        type,
+        element ?? Element.none,
+        pos ?? actor?.pos ?? Vec.zero,
+        dir ?? Direction.none,
+        actor,
+        item,
+        amount ?? 0,
+      ),
     );
   }
 

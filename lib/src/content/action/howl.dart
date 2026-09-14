@@ -11,7 +11,7 @@ class HowlAction extends Action {
   @override
   ActionResult onPerform() {
     show("{1} $_verb!", actor);
-    addEvent(EventTypes.howl, actor: actor);
+    addEvent(Events.howl, actor: actor);
 
     for (var other in game.stage.actors) {
       if (other != actor &&

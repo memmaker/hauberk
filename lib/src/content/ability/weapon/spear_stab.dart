@@ -63,8 +63,12 @@ class SpearStabAction extends MasteryAction with GeneratorActionMixin {
       // Show the effect and perform the attack on alternate frames. This
       // ensures the effect gets a chance to be shown before the hit effect
       //  covers hit.
-      var weapon = hero.equipment.weapons.first.appearance;
-      addEvent(EventTypes.stab, pos: pos, dir: _dir, other: weapon);
+      addEvent(
+        Events.stab,
+        pos: pos,
+        dir: _dir,
+        item: hero.equipment.weapons.first,
+      );
       yield waitOne();
 
       attack(pos);

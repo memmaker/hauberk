@@ -56,7 +56,7 @@ class TossLosAction extends LosAction {
 
   @override
   void onStep(Vec previous, Vec pos) {
-    addEvent(EventType.toss, pos: pos, other: _item);
+    addEvent(EventType.toss, pos: pos, item: _item);
   }
 
   @override

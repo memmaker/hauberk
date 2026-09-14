@@ -28,7 +28,7 @@ class PerceiveAction extends Action {
       if (actor == hero) continue;
 
       if (game.heroCanPerceive(actor) && !alreadyPerceived.contains(actor)) {
-        addEvent(EventTypes.perceive, actor: actor);
+        addEvent(Events.perceive, actor: actor);
         perceived = true;
       }
     }

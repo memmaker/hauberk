@@ -61,7 +61,7 @@ class AxeSweepAction extends MasteryAction with GeneratorActionMixin {
       // Show the effect and perform the attack on alternate frames. This
       // ensures the effect gets a chance to be shown before the hit effect
       // covers hit.
-      addEvent(EventTypes.slash, pos: actor!.pos + dir, dir: dir);
+      addEvent(Events.slash, pos: actor!.pos + dir, dir: dir);
       yield* wait(2);
 
       attack(actor!.pos + dir);

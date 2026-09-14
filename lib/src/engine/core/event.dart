@@ -1,5 +1,6 @@
 import 'package:piecemeal/piecemeal.dart';
 
+import '../item/item.dart';
 import 'actor.dart';
 import 'element.dart';
 
@@ -10,13 +11,22 @@ class Event {
   final EventType type;
   // TODO: Having these all be nullable leads to a lot of "!" in effects.
   // Consider a better way to model this.
-  final Actor? actor;
+  final Vec pos;
+  final Direction dir;
   final Element element;
-  final Object? other;
-  final Vec? pos;
-  final Direction? dir;
+  final Actor? actor;
+  final Item? item;
+  final int amount;
 
-  Event(this.type, this.actor, this.element, this.pos, this.dir, this.other);
+  Event(
+    this.type,
+    this.element,
+    this.pos,
+    this.dir,
+    this.actor,
+    this.item,
+    this.amount,
+  );
 }
 
 // TODO: Move to content.

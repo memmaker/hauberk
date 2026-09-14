@@ -1,6 +1,6 @@
 import '../engine.dart';
 
-class EventTypes {
+class Events {
   /// One step of a bolt.
   static const bolt = EventType("bolt");
 

@@ -252,7 +252,7 @@ class Hit {
       EventType.hit,
       actor: defender,
       element: element,
-      other: damage,
+      amount: damage,
     );
     if (canSeeAttacker || canSeeDefender) {
       action.log('{1} ${_attack.verb} {2}.', attackNoun, defenderNoun);

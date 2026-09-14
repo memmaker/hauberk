@@ -44,7 +44,7 @@ class TeleportAction extends Action {
 
     var from = actor!.pos;
     moveActor(actor!, best);
-    addEvent(EventTypes.teleport, actor: actor, pos: from);
+    addEvent(Events.teleport, actor: actor, pos: from);
     return succeed('{1} teleport[s]!', actor);
   }
 }
