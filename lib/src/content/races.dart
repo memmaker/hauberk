@@ -27,7 +27,8 @@ class Races {
           "willing, but delight in it. Solid, impenetrable and somewhat dim, "
           "dwarves have much in common with the mines they love.",
       const [
-        // TODO: Come up with race powers.
+        // TODO: Tumble: A tumble move that moves two tiles in one turn.
+        // TODO: Another.
       ],
       {
         Stat.strength: 1.3,
@@ -63,7 +64,8 @@ class Races {
           "latter.",
       [
         SingleMinded(),
-        // TODO: Another.
+        // TODO: Sense magic: Detect nearby magic items and monsters. Can't see
+        // what they are, though.
       ],
       {
         Stat.strength: 0.7,
@@ -81,7 +83,7 @@ class Races {
           "great devotion.",
       [
         QuickStudy(),
-        // TODO: Another.
+        // TODO: Field of mundanity: Defense against magical attacks.
       ],
       {
         Stat.strength: 1.0,

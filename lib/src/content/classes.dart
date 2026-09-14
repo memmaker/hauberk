@@ -5,6 +5,19 @@ import 'skill/skills.dart';
 class Classes {
   // TODO: Better starting items?
 
+  // TODO: Class power ideas:
+  // - Training: Automatically earn progress towards weapon skills by doing the
+  //   thing. Like the old discipline mechanic. Could do something similar for
+  //   magical skills.
+  //
+  // - Scavenge: Eat corpses as food.
+  //
+  // - Darksight: See better without light.
+  //
+  // - Regeneration: Regain health more quickly.
+  //
+  // - Concentration: Regain focus more quickly.
+
   /// All of the known classes.
   static final List<HeroClass> all = [
     HeroClass(
