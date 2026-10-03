@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:malison/malison.dart';
 import 'package:malison/malison_web.dart';
 
@@ -121,7 +123,9 @@ class HelpDialog extends Screen<Input> {
     var helpLines = helpChapters[_chapterNames[_chapter]]!;
     _scrollPosition = (_scrollPosition + offset).clamp(
       0,
-      helpLines.length - _viewHeight,
+      // RVIP: a chapter shorter than the view has nothing to scroll
+      // (clamp threw "Invalid argument: 0").
+      math.max(0, helpLines.length - _viewHeight),
     );
     dirty();
   }
