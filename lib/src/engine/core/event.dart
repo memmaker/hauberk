@@ -12,6 +12,22 @@ import 'element.dart';
 void Function(String name)? rvipSoundHook;
 void rvipSound(String name) => rvipSoundHook?.call(name);
 
+/// RVIP: run report (beacon query, sent by the page's RvipWM.report).
+void Function(String query)? rvipReportHook;
+
+/// RVIP: breed name of the monster that last dealt the hero a killing blow.
+String? rvipKiller;
+
+void rvipReport(String ev, String name, int depth) {
+  var q =
+      'g=hauberk&ev=$ev&name=${Uri.encodeQueryComponent(name)}&depth=$depth';
+  if (ev == 'death' && rvipKiller != null) {
+    q += '&killer=${Uri.encodeQueryComponent(rvipKiller!)}';
+  }
+  rvipKiller = null;
+  rvipReportHook?.call(q);
+}
+
 class Event {
   final EventType type;
   // TODO: Having these all be nullable leads to a lot of "!" in effects.

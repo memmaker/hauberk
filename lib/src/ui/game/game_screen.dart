@@ -433,6 +433,7 @@ class GameScreen extends Screen<Input> {
 
       case (ExitPopup(), _):
         // TODO: Hero should start next to dungeon entrance.
+        rvipReport('quit', game.hero.save.name, game.depth);
 
         // Update shops.
         game.hero.save.shops.forEach((shop, inventory) {
@@ -515,6 +516,7 @@ class GameScreen extends Screen<Input> {
     // See if the hero died.
     if (!game.hero.isAlive) {
       rvipSound('death');
+      rvipReport('death', game.hero.save.name, game.depth);
       ui.goTo(GameOverScreen(_storage, game.hero.save, _previousSave));
       return;
     }

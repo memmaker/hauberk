@@ -8,6 +8,7 @@ import 'element.dart';
 import 'energy.dart';
 import 'event.dart';
 import 'game.dart';
+import '../monster/monster.dart';
 import 'thing.dart';
 
 /// An active entity in the game. Includes monsters and the hero.
@@ -209,6 +210,9 @@ abstract class Actor extends Thing {
     action.show("{1} kill[s] {2}.", attack, this);
     if (attacker != null) attacker.onKilled(action, this);
 
+    if (this == action.game.hero) {
+      rvipKiller = attacker is Monster ? attacker.breed.name : null;
+    }
     onDied(action, attack);
 
     return true;

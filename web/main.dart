@@ -63,6 +63,11 @@ void main() {
       globalContext.callMethod('rvipSound'.toJS, name.toJS);
     }
   };
+  rvipReportHook = (q) {
+    if (globalContext.has('rvipReport')) {
+      globalContext.callMethod('rvipReport'.toJS, q.toJS);
+    }
+  };
   globalContext['rvipFont'] = ((JSNumber i) => _setFont(i.toDartInt)).toJS;
   globalContext['rvipResize'] = (() {
     _resizeTerminal();

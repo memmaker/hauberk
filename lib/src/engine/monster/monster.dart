@@ -419,6 +419,12 @@ class Monster extends Actor {
   /// Called when this monster has been killed by [attack].
   @override
   void onDied(Action action, Thing attack) {
+    // RVIP: Hauberk has no win screen; slaying the depth-100 boss wins.
+    if (breed.name == "Nameless Unmaker") {
+      var game = action.game;
+      rvipReport('win', game.hero.save.name, game.depth);
+    }
+
     var items = action.game.stage.placeDrops(
       pos,
       breed.drop,

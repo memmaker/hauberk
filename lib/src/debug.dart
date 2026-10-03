@@ -9,7 +9,9 @@ import 'engine.dart';
 /// the engine to punch debug info all the way to where the UI can get it. It
 /// should not be used outside of a debugging scenario.
 class Debug {
-  static const enabled = true;
+  // RVIP: cheats (wizard menu, any depth) off in the web build so the
+  // leaderboard is fair; `-Ddebug=true` turns them back on.
+  static const enabled = bool.fromEnvironment('debug');
 
   /// If true, logs details about combat statistics.
   static const bool logCombat = false;

@@ -9,7 +9,8 @@
 - Stage 5 (Web page and windows) done incl. pop-ups.
 - Stage 6 (Docs and sound) done.
 - Stage 7 (Publish) done.
-- Stage 8 (Shrine) done; next: stage 9 (graveyard + leaderboard).
+- Stage 8 (Shrine) done.
+- Stage 9 (Graveyard + leaderboard) done. RVIP complete.
 - Folder `~/Games/hauberk`, branch `rvip-port`, base upstream `master` @ 6c5c684c (other branches: `areas` 2016, `skills-reboot` 2025, `temp-chain-lightning` WIP; master is newest complete). Upstream commit untouched = pristine commit.
 - Case O: Dart game on the Malison canvas terminal (own panels: hero, equipment, inventory, on-ground, log). Frontend: `web/main.dart`, `web/index.html`, UI in `lib/src/ui/`.
 - Build: `./build.sh` → `web/dist` (`dart pub get`, `dart compile js -O2 web/main.dart`, copies html/css/fonts). Dart SDK 3.13.5 at `~/Games/dart-sdk` (override with `DART_SDK`).
@@ -58,3 +59,8 @@
 - Open (stage 7): RogueBasin down (522), year from git history only; `make-help.py` needs `~/Desktop/Games/Roguelikes/Docs` (a fresh clone elsewhere can't build help.html, as IA); no Info button until the shrine exists.
 - Stage 8: `roguelikes-index/shrine/hauberk.html` + `shrine/hauberk/` (upstream getting-started.html, quick-reference.html, styles.css, COPYRIGHT.txt; MIT). Info button + tree ✦ live; game page h1 already linked. Card claim "skills that grow by use" was wrong (skills are bought with experience via `E`, ExperienceDialog; the by-use "discipline" mechanic is gone, only a TODO in classes.dart) → fixed on card and og description; "hundred-level dungeon" correct (`Stage.maxDepth = 100`). Cheats: upstream `Debug.enabled = true` (lib/src/debug.dart) → our build has the wizard menu Shift+Alt+W and any-depth select.
 - Open (stage 8): no walkthrough exists; upstream manual is self-declared out of date and overflows at 375 px (ASCII art, copied as is); `Debug.enabled = true` is live (user may want it off for stage 9 leaderboard fairness); no win path known (Nameless Unmaker at depth 100 has no win hook) – check in stage 9.
+- Stage 9: engine `rvipReport(ev, name, depth)` + `rvipReportHook` + `rvipKiller` in `lib/src/engine/core/event.dart`; `web/main.dart` hook -> `window.rvipReport` (web/rvip_page.js) -> `RvipWM.report`. Fields: g=hauberk, ev, name (hero save name), depth, killer (death only: `breed.name` of the monster dealing the killing blow, set in `Actor.takeDamage`; omitted for non-monster deaths). No score list, turn counter or character level in Hauberk: score/turns/lvl omitted.
+- ev=death: `GameScreen.update` when the hero is dead (before GameOverScreen; permadeath or not, each death ends the dive). ev=quit: forfeit in the dungeon (`activate`, ForfeitPopup true, depth > 0: dungeon progress discarded). Town forfeit = back to menu = save-and-quit, nothing. ev=win: `Monster.onDied` for breed "Nameless Unmaker" (depth-100 boss; Hauberk has no win screen, play continues).
+- Cheats off: `Debug.enabled = bool.fromEnvironment('debug')` (false; `-Ddebug=true` for a dev build): no wizard menu, depth select capped at max depth + 1.
+- Tests: `test/rvip/report_test.dart` (boss kill sends win; hero killed by a monster sends killer breed); Playwright outbox: blocked 503 -> URL with id/at kept in `rvip-outbox`, 204 + `RvipWM.flush()` -> sent, empty. Killer art: `roguelikes-index/killers/make.py hauberk()` -> 152 PNGs from rvipBreedTile + tiles-dawn.png.
+- Open (stage 9): death/win not played through in a browser (Malison needs real keys, no wizard any more); engine paths unit-tested, bridge is the rvipSound pattern. Live beacon unchecked (pane UA filtered): check with a real death in the user's browser.

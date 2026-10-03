@@ -120,6 +120,13 @@
    * plays them. Off by default; sounds.json is fetched only when on. No music. */
   var snd = { on: false, cfg: null, loading: false, played: 0 };
   window.rvipAudio = function () { return snd; };
+  /* RVIP stage 9: run report (query built by the game) through the rvip-wm outbox. */
+  window.rvipReport = function (q) {
+    try {
+      if (window.RvipWM && RvipWM.report) RvipWM.report(q);
+      else fetch('/roguelikes/beacon?' + q, { keepalive: true, mode: 'no-cors' }).catch(function () {});
+    } catch (e) {}
+  };
   window.rvipSound = function (name) {
     if (!snd.on) return;
     if (!snd.cfg) {
