@@ -64,7 +64,7 @@
 	#pop[hidden] { display: none; }
 	#pop .txt { padding: 2px 4px; }
 	/* item tile in a text row (game sends the slot): 1em square, sheet scaled per em, nearest-neighbour */
-	.ti { display: inline-block; width: 1em; height: 1em; vertical-align: -0.15em; background: url(tiles-dawn.png) no-repeat 0 0 / 16em auto; image-rendering: pixelated; }
+	.ti { display: inline-block; width: 1ch; height: 1ch; vertical-align: -0.1em; background: url(tiles-dawn.png) no-repeat 0 0 / 16ch auto; image-rendering: pixelated; }
 	kbd { display: inline-block; min-width: 1.7em; padding: 0 6px; text-align: center; font: 600 12px/1.6 ui-monospace, Menlo, monospace;
 		background: #22222a; border: 1px solid #3a3a46; border-bottom-width: 2px; border-radius: 4px; color: var(--text); }
 	#help { position: fixed; inset: 0; background: rgba(0,0,0,.75); display: flex; align-items: center; justify-content: center; z-index: 10; }
@@ -73,6 +73,10 @@
 	#help .head { display: flex; align-items: center; padding: 10px 16px; border-bottom: 1px solid var(--line); }
 	#help .head h2 { margin: 0; font-size: 16px; color: var(--accent); flex: 1; }
 	#help-body { overflow: auto; padding: 4px 24px 32px; outline: none; font-size: 14px; line-height: 1.6; }
+	/* the game's own glyph art (font sheet cell, 32 per row) in a text row: one cell wide, tinted by the background colour */
+	.gl { display: inline-block; width: 1ch; height: 1.2em; vertical-align: top;
+		-webkit-mask: url(font_16_20.png) no-repeat calc(var(--gx) * -1ch) calc(var(--gy) * -1.2em) / 32ch 9.6em;
+		mask: url(font_16_20.png) no-repeat calc(var(--gx) * -1ch) calc(var(--gy) * -1.2em) / 32ch 9.6em; }
 </style>
 </head>
 <body>

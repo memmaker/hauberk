@@ -5,6 +5,8 @@ import 'dart:js_interop';
 import 'dart:js_interop_unsafe';
 
 import 'package:malison/malison.dart';
+// ignore: implementation_imports
+import 'package:malison/src/unicode_map.dart';
 import 'package:piecemeal/piecemeal.dart';
 
 import '../engine.dart';
@@ -103,7 +105,7 @@ class RvipHtmlTerminal extends Terminal {
           style = null;
           row.write(
             '<span class="ti" style="background-position:'
-            '-${slot % 16}em -${slot ~/ 16}em"> </span>',
+            '-${slot % 16}ch -${slot ~/ 16}ch"> </span>',
           );
           continue;
         }
@@ -113,7 +115,21 @@ class RvipHtmlTerminal extends Terminal {
           flush();
           style = s;
         }
-        var c = String.fromCharCode(g.char);
+        // Non-ASCII glyphs are Hauberk's own art at that font-sheet slot (a
+        // Unicode letter drawn as an item icon): show the sheet cell, not the
+        // letter. Box drawing (U+2500..259F) stays text so borders join.
+        var code = g.char;
+        if (code > 0x7e && (code < 0x2500 || code > 0x259f)) {
+          var slot = unicodeMap[code] ?? code;
+          flush();
+          style = null;
+          row.write(
+            '<span class="gl" style="background:${g.fore.cssColor};'
+            '--gx:${slot % 32};--gy:${slot ~/ 32}"> </span>',
+          );
+          continue;
+        }
+        var c = String.fromCharCode(code);
         run.write(switch (c) {
           '<' => '&lt;',
           '>' => '&gt;',
@@ -123,6 +139,26 @@ class RvipHtmlTerminal extends Terminal {
       }
       flush();
       rows.add(row.toString());
+    }
+    // Help boxes run off the screen's bottom edge on the canvas: close them.
+    if (crop) {
+      var y = height - 1, row = StringBuffer(), open = -1, col = left;
+      for (var x = left; x < width; x++) {
+        var g = _cells[y * width + x];
+        if (g.char != CharCode.boxDrawingsLightVertical) continue;
+        if (open < 0) {
+          row.write(' ' * (x - col));
+          open = x;
+        } else {
+          row.write(
+            '<span style="color:${g.fore.cssColor}">└${'─' * (x - open - 1)}┘'
+            '</span>',
+          );
+          open = -1;
+          col = x + 1;
+        }
+      }
+      if (row.isNotEmpty) rows.add(row.toString());
     }
     while (rows.isNotEmpty && rows.last.isEmpty) {
       rows.removeLast();
