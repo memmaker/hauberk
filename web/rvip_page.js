@@ -71,12 +71,12 @@
     if (html !== popHtml) { popHtml = html; pop.innerHTML = html; pop.hidden = !html; }
     if (html && w && popCell !== w + 'x' + h) {
       popCell = w + 'x' + h;
-      pop.style.setProperty('--ch', h + 'px'); pop.style.lineHeight = h + 'px'; pop.style.fontSize = h + 'px';
-      var sp = document.createElement('span'); sp.textContent = 'MMMMMMMMMM'; pop.appendChild(sp);
-      pop.style.fontSize = (h * w * 10 / sp.getBoundingClientRect().width) + 'px'; sp.remove();
+      /* the map's own Malison sheet (main.dart _makeTerminal names it so) */
+      pop.style.setProperty('--cw', w + 'px'); pop.style.setProperty('--ch', h + 'px');
+      pop.style.setProperty('--sheet', 'url(font_' + w + (w === h ? '' : '_' + h) + '.png)');
     }
     /* on open, scroll the Map window to where the game drew the dialog (no move) */
-    var m = $('map'), first = html && !was && pop.querySelector('span[style*=background]');
+    var m = $('map'), first = html && !was && pop.querySelector('b');
     if (html && !was) popScroll = [m.scrollLeft, m.scrollTop];
     if (first) { m.scrollTop = 0; m.scrollLeft = 0; first.scrollIntoView({ block: 'nearest', inline: 'nearest' }); }
     if (!html && was) { m.scrollLeft = popScroll[0]; m.scrollTop = popScroll[1]; }

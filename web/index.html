@@ -59,9 +59,13 @@
 	#t-map .wm-topl { font-size: 13px; }
 	/* the game's dialogs and full-screen screens over the map: the game's whole one-window screen as a transparent
 	   text grid (cells the game leaves alone show the map), placed and framed by the game; #map scrolls it */
-	#pop { position: absolute; left: 0; top: 0; z-index: 3; margin: 0; padding: 0; line-height: 1; background: none; }
+	#pop { position: absolute; left: 0; top: 0; z-index: 3; margin: 0; padding: 0; line-height: 1; font-size: 0; background: none; }
 	#pop[hidden] { display: none; }
-	#pop .gl { height: var(--ch); -webkit-mask-position: calc(var(--gx) * -1ch) calc(var(--gy) * -1 * var(--ch)); -webkit-mask-size: 32ch calc(8 * var(--ch));
+	#pop > div { height: var(--ch); white-space: nowrap; }
+	#pop b, #pop i { display: inline-block; vertical-align: top; height: var(--ch); }
+	#pop i { width: var(--cw); }
+	#pop i.g { image-rendering: pixelated; -webkit-mask: var(--sheet) no-repeat calc(var(--gx) * -1 * var(--cw)) calc(var(--gy) * -1 * var(--ch)) / calc(32 * var(--cw)) calc(8 * var(--ch));
+		mask: var(--sheet) no-repeat calc(var(--gx) * -1 * var(--cw)) calc(var(--gy) * -1 * var(--ch)) / calc(32 * var(--cw)) calc(8 * var(--ch)); }
 		mask-position: calc(var(--gx) * -1ch) calc(var(--gy) * -1 * var(--ch)); mask-size: 32ch calc(8 * var(--ch)); }
 	/* item tile in a text row (game sends the slot): 1em square, sheet scaled per em, nearest-neighbour */
 	kbd { display: inline-block; min-width: 1.7em; padding: 0 6px; text-align: center; font: 600 12px/1.6 ui-monospace, Menlo, monospace;

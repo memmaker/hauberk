@@ -68,6 +68,7 @@ class RvipHtmlTerminal extends Terminal {
   /// [overlay]: the whole grid over the map; cells nothing drew stay
   /// transparent, drawn cells keep their background (black too).
   String toHtml({bool overlay = false}) {
+    if (overlay) return _overlayHtml();
     var rows = <String>[];
     for (var y = 0; y < height; y++) {
       var end = width;
@@ -133,6 +134,42 @@ class RvipHtmlTerminal extends Terminal {
       rows.removeLast();
     }
     return rows.join('\n');
+  }
+  /// The overlay grid: every cell is one cell of the game's own font sheet
+  /// (`<i>`, masked by the page with the sheet the map uses, tinted with the
+  /// fore colour), runs of one background in a `<b>`; undrawn cells stay
+  /// transparent. Pixel-identical to Malison's canvas.
+  String _overlayHtml() {
+    var rows = StringBuffer();
+    for (var y = 0; y < height; y++) {
+      var end = width;
+      while (end > 0 && _cells[y * width + end - 1] == null) {
+        end--;
+      }
+      rows.write('<div>');
+      String? back;
+      for (var x = 0; x < end; x++) {
+        var g = _cells[y * width + x];
+        var b = g?.back.cssColor;
+        if (b != back) {
+          if (back != null) rows.write('</b>');
+          if (b != null) rows.write('<b style="background:$b">');
+          back = b;
+        }
+        var code = g == null ? 0 : unicodeMap[g.char] ?? g.char;
+        if (code == 0 || code == 0x20) {
+          rows.write('<i></i>');
+        } else {
+          rows.write(
+            '<i class="g" style="background:${g!.fore.cssColor};'
+            '--gx:${code % 32};--gy:${code ~/ 32}"></i>',
+          );
+        }
+      }
+      if (back != null) rows.write('</b>');
+      rows.write('</div>');
+    }
+    return rows.toString();
   }
 }
 
