@@ -250,7 +250,7 @@ class StagePanel extends Panel {
     if (rvipTilesOn) {
       rvipPublish(
         game,
-        rvipScreens.isNotEmpty && identical(rvipScreens.last, _gameScreen),
+        identical(rvipMapTop, _gameScreen),
         bounds,
         showActor: (actor, tile) =>
             tile.isVisible ||

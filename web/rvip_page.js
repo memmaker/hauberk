@@ -64,6 +64,20 @@
     if (cache[id] === html) return;
     cache[id] = html; $('pane-' + id).innerHTML = html;
   };
+  /* pop-up over the map: the game's dialogs as HTML (empty = closed); text follows Messages' size */
+  var popHtml = '';
+  function placePop() {
+    var pop = $('pop'); if (pop.hidden) return;
+    pop.style.fontSize = RvipWM.fontSize('msg') + 'px';
+    RvipWM.popup(pop, { center: true });
+  }
+  window.rvipPopup = function (html) {
+    if (html === popHtml) return;
+    var pop = $('pop'), was = !pop.hidden;
+    popHtml = html; pop.firstChild.innerHTML = html; pop.hidden = !html;
+    if (!was) pop.scrollTop = 0;
+    placePop();
+  };
   window.rvipMessages = function (lines) { RvipWM.setLog($('msg'), lines); };
   function icon(t) {
     if (!t || !window.rvipTiles) return null;
@@ -114,11 +128,12 @@
       size: { map: function () { return 12; } },
       fontMax: { map: 17 },
       zoom: { map: function (size) { if (window.rvipFont) window.rvipFont(size - 8); },
-        status: redraw, inv: redraw, equip: redraw },
+        status: redraw, inv: redraw, equip: redraw, msg: function () { placePop(); } },
       layout: function () {
         window.rvipMulti = wm.mode() === 'multi';
         if (window.rvipResize) window.rvipResize(); else redraw();
         if (window.rvipDraw) window.rvipDraw();
+        placePop();
       }
     });
     window.rvipMulti = wm.mode() === 'multi';

@@ -12,6 +12,7 @@ import '../hues.dart';
 import 'game/game_screen.dart';
 import 'item/item_renderer.dart';
 import 'panel/sidebar_panel.dart';
+import 'rvip_tiles.dart';
 import 'rvip_tiles_gen.dart';
 
 /// Multi-window mode: the Malison terminal is the map only, the side panels
@@ -41,6 +42,9 @@ class RvipHtmlTerminal extends Terminal {
   final int height;
   final List<Glyph> _cells;
 
+  /// Tile slot per cell index (item icons while tiles are on).
+  final Map<int, int> _icons = {};
+
   RvipHtmlTerminal(this.width, this.height)
     : _cells = List.filled(width * height, Glyph.clear);
 
@@ -53,12 +57,31 @@ class RvipHtmlTerminal extends Terminal {
     _cells[y * width + x] = glyph;
   }
 
+  /// Shows tile [slot] instead of the glyph at [x], [y] (tile mode only).
+  void icon(int x, int y, int? slot) {
+    if (slot == null || !rvipTilesOn) return;
+    if (x < 0 || y < 0 || x >= width || y >= height) return;
+    _icons[y * width + x] = slot;
+  }
+
   bool _blank(Glyph g) => g.char == 0x20 && g.back == Color.black;
 
   /// Rows without trailing blanks, no empty rows at the bottom (W0 rule 5).
-  String toHtml() {
+  /// [crop]: also drop blank rows at the top and blank columns at the left
+  /// (a dialog drawn somewhere on a whole-screen terminal).
+  String toHtml({bool crop = false}) {
     var rows = <String>[];
-    for (var y = 0; y < height; y++) {
+    var left = 0, top = 0;
+    if (crop) {
+      left = width;
+      top = height;
+      for (var i = 0; i < _cells.length; i++) {
+        if (_blank(_cells[i])) continue;
+        left = left < i % width ? left : i % width;
+        top = top < i ~/ width ? top : i ~/ width;
+      }
+    }
+    for (var y = top; y < height; y++) {
       var end = width;
       while (end > 0 && _blank(_cells[y * width + end - 1])) {
         end--;
@@ -72,8 +95,18 @@ class RvipHtmlTerminal extends Terminal {
         run.clear();
       }
 
-      for (var x = 0; x < end; x++) {
+      for (var x = left; x < end; x++) {
         var g = _cells[y * width + x];
+        var slot = _icons[y * width + x];
+        if (slot != null) {
+          flush();
+          style = null;
+          row.write(
+            '<span class="ti" style="background-position:'
+            '-${slot % 16}em -${slot ~/ 16}em"> </span>',
+          );
+          continue;
+        }
         var s = 'color:${g.fore.cssColor}';
         if (g.back != Color.black) s += ';background:${g.back.cssColor}';
         if (s != style) {
@@ -94,8 +127,34 @@ class RvipHtmlTerminal extends Terminal {
     while (rows.isNotEmpty && rows.last.isEmpty) {
       rows.removeLast();
     }
+    // A dialog and its key help drawn far apart: close long blank gaps.
+    if (crop) {
+      for (var i = rows.length - 1; i >= 3; i--) {
+        if (rows[i].isEmpty && rows[i - 1].isEmpty && rows[i - 2].isEmpty) {
+          rows.removeAt(i);
+        }
+      }
+    }
     return rows.join('\n');
   }
+}
+
+/// The page pop-up over the map (`RvipWM.popup`); empty hides it.
+void rvipPopup(String html) {
+  if (globalContext.has('rvipPopup')) {
+    globalContext.callMethod('rvipPopup'.toJS, html.toJS);
+  }
+}
+
+/// Empties every side window (back on the title screens, no hero).
+void rvipClearPanes() {
+  if (!globalContext.has('rvipPane')) return;
+  for (var id in ['status', 'equip', 'inv']) {
+    _pane(id, '');
+  }
+  globalContext.callMethod('rvipVisible'.toJS, ''.toJS);
+  globalContext.callMethod('rvipMessages'.toJS, <JSAny?>[].toJS);
+  _logOf = null;
 }
 
 void _pane(String id, String html) {

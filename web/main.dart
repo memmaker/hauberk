@@ -5,9 +5,12 @@ import 'dart:math' as math;
 import 'package:hauberk/src/content.dart';
 import 'package:hauberk/src/debug.dart';
 import 'package:hauberk/src/engine.dart';
+import 'package:hauberk/src/ui/game/direction_dialog.dart';
 import 'package:hauberk/src/ui/game/game_screen.dart';
+import 'package:hauberk/src/ui/game/target_dialog.dart';
 import 'package:hauberk/src/ui/input.dart';
 import 'package:hauberk/src/ui/menu/main_menu_screen.dart';
+import 'package:hauberk/src/ui/menu/new_hero_screen.dart';
 import 'package:hauberk/src/ui/rvip_tiles.dart';
 import 'package:hauberk/src/ui/rvip_web.dart';
 import 'package:malison/malison.dart';
@@ -265,7 +268,6 @@ void _addFont(String name, int charWidth, [int? charHeight]) {
       }
     });
   }
-
 }
 
 int _fontIndex() {
@@ -391,11 +393,65 @@ void _refreshDebugBoxes() {
 class RvipUI extends UserInterface<Input> {
   RvipUI(RenderableTerminal terminal) : super(terminal);
 
+  bool _popDirty = true;
+
+  @override
+  void dirty() {
+    _popDirty = true;
+    super.dirty();
+  }
+
+  @override
+  void refresh() {
+    super.refresh();
+    if (_popDirty) _popups();
+  }
+
+  /// RVIP: screens drawn on the map canvas; every screen above the topmost
+  /// one is a page pop-up (W0 rules 1, 6), rendered by the game as HTML.
+  static bool _onMap(Object s) =>
+      s is GameScreen ||
+      s is MainMenuScreen ||
+      s is NewHeroScreen ||
+      s is TargetDialog ||
+      s is DirectionDialog;
+
+  void _popups() {
+    _popDirty = false;
+    var k = rvipScreens.lastIndexWhere(_onMap);
+    rvipMapTop = k < 0 ? null : rvipScreens[k];
+    if (k == rvipScreens.length - 1) {
+      rvipPopup('');
+      return;
+    }
+    // Map canvas: the screens up to k only (Malison drew the dialogs too).
+    var term = _font.terminal;
+    term.clear();
+    var j = k;
+    while (j > 0 && (rvipScreens[j] as Screen<Input>).isTransparent) {
+      j--;
+    }
+    for (var i = math.max(j, 0); i <= k; i++) {
+      (rvipScreens[i] as Screen<Input>).render(term);
+    }
+    term.render();
+    // Pop-up: the rest, at least the game's old 80x34 screen.
+    var t = RvipHtmlTerminal(
+      math.max(term.width, 80),
+      math.max(term.height, 34),
+    );
+    for (var i = k + 1; i < rvipScreens.length; i++) {
+      (rvipScreens[i] as Screen<Input>).render(t);
+    }
+    rvipPopup(t.toHtml(crop: true));
+  }
+
   @override
   void push(Screen<Input> screen) {
     rvipScreens.add(screen);
     rvipHide();
     super.push(screen);
+    _popups();
     _inGame();
   }
 
@@ -404,6 +460,7 @@ class RvipUI extends UserInterface<Input> {
     rvipScreens.removeLast();
     rvipHide();
     super.pop(result);
+    _popups();
     _inGame();
   }
 
@@ -413,6 +470,7 @@ class RvipUI extends UserInterface<Input> {
     rvipScreens.add(screen);
     rvipHide();
     super.goTo(screen);
+    _popups();
     _inGame();
   }
 }
@@ -425,5 +483,6 @@ void _inGame() {
   globalContext['rvipInGame'] = now.toJS;
   if (now == _heroInGame) return;
   _heroInGame = now;
+  if (!now) rvipClearPanes();
   _resizeTerminal();
 }

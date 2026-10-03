@@ -14,6 +14,9 @@ import 'rvip_tiles_gen.dart';
 /// The screen stack, mirrored by `RvipUI` in web/main.dart.
 final List<Object> rvipScreens = [];
 
+/// The topmost screen drawn on the map canvas (the ones above are pop-ups).
+Object? rvipMapTop;
+
 /// Size of the whole Malison terminal (set by `GameScreen.resize`).
 Vec rvipTermSize = Vec(1, 1);
 
