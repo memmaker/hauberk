@@ -97,7 +97,7 @@
   sel.addEventListener('keydown', function (e) { e.stopPropagation(); });
   function face(n) {
     var css = $('face-css') || document.head.appendChild(Object.assign(document.createElement('style'), { id: 'face-css' }));
-    css.textContent = n ? '.win:not(#t-map) .body, .win:not(#t-map) .txt { font-family: "' + n + '", ui-monospace, monospace !important; }' : '';
+    css.textContent = n ? '.win:not(#t-map) .body, .win:not(#t-map) .txt { font-family: "' + n + '", ui-monospace, monospace !important;' + (/^(Web|Easyband)/.test(n) ? ' line-height: 1 !important;' : '') + ' }' : '';
     if (!n) return redraw();
     new FontFace(n, 'url(../fonts/' + n + '.woff)').load().then(function (f) { document.fonts.add(f); redraw(); }, redraw);
   }
