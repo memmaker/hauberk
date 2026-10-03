@@ -59,5 +59,4 @@ Thanks for understanding.
 ## Web port (RVIP)
 
 Branch `rvip-port` of [memmaker/hauberk](https://github.com/memmaker/hauberk), played at
-https://ruzzoli.de/roguelikes/hauberk/ . Tiles: DawnLike by DragonDePlatino, palette by
-DawnBringer, CC BY 4.0. Sound effects are synthesized at build time (`web/mksounds.py`).
+https://ruzzoli.de/roguelikes/hauberk/ . Text only (the game's own glyphs). Sound effects are synthesized at build time (`web/mksounds.py`).

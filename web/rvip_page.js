@@ -1,5 +1,5 @@
 // RVIP: Hauberk's page. Windows via ../rvip-wm.js, saves/help via ../rvip-app.js.
-// Every value (heroes, layout, text font, tile set) lives in the game's own
+// Every value (heroes, layout, text font) lives in the game's own
 // IndexedDB database (RvipApp.dir), read before the game starts. Window
 // contents come from Dart (lib/src/ui/rvip_web.dart); this only places them.
 (function () {
@@ -59,7 +59,7 @@
   window.addEventListener('beforeunload', function (e) { if (window.rvipInGame && app.running) { e.preventDefault(); e.returnValue = ''; } });
 
   /* ---- window contents (sent by Dart) ---- */
-  var cache = {}, visKey = null;
+  var cache = {};
   window.rvipPane = function (id, html) {
     if (cache[id] === html) return;
     cache[id] = html; $('pane-' + id).innerHTML = html;
@@ -79,16 +79,8 @@
     placePop();
   };
   window.rvipMessages = function (lines) { RvipWM.setLog($('msg'), lines); };
-  function icon(t) {
-    if (!t || !window.rvipTiles) return null;
-    var d = document.createElement('div'); d.className = 'wm-ic';
-    d.style.backgroundPosition = -(t % 16) * 16 + 'px ' + -Math.floor(t / 16) * 16 + 'px';
-    return d;
-  }
   window.rvipVisible = function (s) {
-    var k = s + (window.rvipTiles ? '\u0001' : '');
-    if (k === visKey) return;
-    visKey = k; $('vis')._vis = null; RvipWM.visible($('vis'), s, icon);
+    RvipWM.visible($('vis'), s);
   };
   /* characters that fit window id's body (its own font size and face) */
   window.rvipCols = function (id) {
@@ -167,13 +159,11 @@
       layout: function () {
         window.rvipMulti = wm.mode() === 'multi';
         if (window.rvipResize) window.rvipResize(); else redraw();
-        if (window.rvipDraw) window.rvipDraw();
         placePop();
       }
     });
     window.rvipMulti = wm.mode() === 'multi';
     if (store.face) { sel.value = store.face; face(store.face); }
-    window.rvipTilesInit();
     var s = document.createElement('script');
     s.src = 'hauberk-core.js';
     s.onload = function () { app.running = true; app.status(''); wm.apply(); };

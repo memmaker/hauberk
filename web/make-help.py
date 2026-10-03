@@ -26,7 +26,7 @@ esc = html.escape
 SAVING = guides_mod.SAVING[PAGE]
 
 WEB = '''<ul>
-<li>The map is the game's own screen (DawnLike tiles, or the game's glyphs after <em>Tiles</em> in the top bar); hero, log messages, inventory, equipment and what you see are separate windows. <em>A−</em> / <em>A+</em> on a title bar (shown on hover) change that window's size of text or tiles; <em>Windows ▾</em> shows, hides and rearranges them (drag a title bar or the gap between windows). Dialogs and menus appear as text boxes over the map.</li>
+<li>The map is the game's own screen (the game's own glyphs); hero, log messages, inventory, equipment and what you see are separate windows. <em>A−</em> / <em>A+</em> on a title bar (shown on hover) change that window's size of text; <em>Windows ▾</em> shows, hides and rearranges them (drag a title bar or the gap between windows). Dialogs and menus appear as text boxes over the map.</li>
 <li><strong>Keys:</strong> the numeric keypad, the arrow keys or the laptop keys <kbd>i</kbd> <kbd>o</kbd> <kbd>p</kbd> <kbd>k</kbd> <kbd>;</kbd> <kbd>,</kbd> <kbd>.</kbd> <kbd>/</kbd> move you. The game has no mouse support.</li>
 <li><strong>Audio ▾:</strong> sound effects made for this port (synthesized, one per kind of action), off by default; the choice is remembered. Hauberk has no music.</li>
 <li>Browsers keep a few shortcuts for themselves (<kbd>Ctrl+W</kbd>, <kbd>Ctrl+T</kbd>, <kbd>Ctrl+N</kbd>, and <kbd>Cmd</kbd> shortcuts on a Mac), so those never reach the game.</li>
@@ -79,8 +79,8 @@ parts.append(section('web', 'Playing in the browser', WEB))
 # RVIP: About this version
 parts.append('<h2 id="h-version">About this version</h2><ul>'
              '<li>Based on <strong>Hauberk</strong> by Bob Nystrom, upstream commit <a href="https://github.com/munificent/hauberk/tree/6c5c684c">munificent/hauberk @ 6c5c684c</a>, MIT licence; compiled to JavaScript with Dart.</li>'
-             '<li>Tiles: <strong>DawnLike</strong> by DragonDePlatino, palette by DawnBringer, <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> (<a href="https://opengameart.org/content/dawnlike-16x16-universal-rogue-like-tileset-v181">OpenGameArt</a>). Sound effects synthesized for this port.</li>'
-             '<li>Our changes (auto-explore, exit walking, command menu, inventory cursor and item menus, tiles, sound, web page) '
+             '<li>Sound effects synthesized for this port.</li>'
+             '<li>Our changes (auto-explore, exit walking, command menu, inventory cursor and item menus, sound, web page) '
              'are on GitHub: <a href="https://github.com/memmaker/hauberk">memmaker/hauberk</a> (<a href="https://github.com/memmaker/hauberk/compare/6c5c684c...rvip-port">all changes</a>).</li></ul>')
 out = sys.argv[1] if len(sys.argv) > 1 else None
 text = '\n'.join(parts)

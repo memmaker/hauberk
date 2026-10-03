@@ -50,7 +50,6 @@
 	.body .txt { font-size: inherit; }
 	#msg { padding: 3px 8px; font-family: ui-monospace, Menlo, monospace; line-height: 1.4; }
 	#status-win, #msg, #equip, #inv, #vis { font-size: 13px; }
-	.wm-ic { background: url(tiles-dawn.png) no-repeat; image-rendering: pixelated; }
 	#inv .h { color: var(--dim); font-size: 11px; text-transform: uppercase; letter-spacing: .06em; margin-top: 4px; }
 	#inv .row { display: flex; align-items: center; gap: 6px; white-space: pre; }
 	#inv .row b { flex: none; min-width: 1.2em; text-align: center; font-weight: normal; }
@@ -64,7 +63,6 @@
 	#pop[hidden] { display: none; }
 	#pop .txt { padding: 2px 4px; }
 	/* item tile in a text row (game sends the slot): 1em square, sheet scaled per em, nearest-neighbour */
-	.ti { display: inline-block; width: 1ch; height: 1ch; vertical-align: -0.1em; background: url(tiles-dawn.png) no-repeat 0 0 / 16ch auto; image-rendering: pixelated; }
 	kbd { display: inline-block; min-width: 1.7em; padding: 0 6px; text-align: center; font: 600 12px/1.6 ui-monospace, Menlo, monospace;
 		background: #22222a; border: 1px solid #3a3a46; border-bottom-width: 2px; border-radius: 4px; color: var(--text); }
 	#help { position: fixed; inset: 0; background: rgba(0,0,0,.75); display: flex; align-items: center; justify-content: center; z-index: 10; }
@@ -86,7 +84,6 @@
 	<button id="btn-file" title="Save file and new game">File ▾</button>
 	<span class="sep"></span>
 	<button id="btn-layout" title="Windows: layout, show and hide">Windows ▾</button>
-	<button id="btn-tiles" title="Map: DawnLike tiles or the game's own glyphs">Tiles</button>
 	<select id="sel-font" title="Font for the text windows (the map uses the game's own glyph font: A−/A+ on its title bar)"><option value="">Font: default</option></select>
 	<button id="btn-audio" title="Sound effects">Audio ▾</button>
 	<div id="menu-audio">
@@ -125,7 +122,6 @@
 <script src="../rvip-wm.js"></script>
 <script src="../rvip-app.js"></script>
 <script src="../rvip-sound.js"></script>
-<script src="rvip_tiles.js"></script>
 <script src="rvip_page.js"></script>
 </body>
 </html>

@@ -4,8 +4,6 @@ import 'package:malison/malison.dart';
 
 import '../../engine.dart';
 import '../../hues.dart';
-import '../rvip_tiles_gen.dart';
-import '../rvip_web.dart';
 import '../widget/draw.dart';
 import 'item_inspector.dart';
 
@@ -104,9 +102,6 @@ void renderItems(
 
     if (enabled) {
       terminal.drawGlyph(x, y, item.appearance as Glyph);
-      if (terminal is RvipHtmlTerminal) {
-        terminal.icon(x, y, rvipItemTile[item.type.name]);
-      }
     }
 
     var nameRight = left + width - 1;

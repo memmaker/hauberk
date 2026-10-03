@@ -14,8 +14,9 @@ import '../hues.dart';
 import 'game/game_screen.dart';
 import 'item/item_renderer.dart';
 import 'panel/sidebar_panel.dart';
-import 'rvip_tiles.dart';
-import 'rvip_tiles_gen.dart';
+
+/// The screen stack, mirrored by `RvipUI` in web/main.dart.
+final List<Object> rvipScreens = [];
 
 /// Multi-window mode: the Malison terminal is the map only, the side panels
 /// are rvip-wm windows. Set by the page (`window.rvipMulti`).
@@ -44,9 +45,6 @@ class RvipHtmlTerminal extends Terminal {
   final int height;
   final List<Glyph> _cells;
 
-  /// Tile slot per cell index (item icons while tiles are on).
-  final Map<int, int> _icons = {};
-
   RvipHtmlTerminal(this.width, this.height)
     : _cells = List.filled(width * height, Glyph.clear);
 
@@ -57,13 +55,6 @@ class RvipHtmlTerminal extends Terminal {
   void drawGlyph(int x, int y, Glyph glyph) {
     if (x < 0 || y < 0 || x >= width || y >= height) return;
     _cells[y * width + x] = glyph;
-  }
-
-  /// Shows tile [slot] instead of the glyph at [x], [y] (tile mode only).
-  void icon(int x, int y, int? slot) {
-    if (slot == null || !rvipTilesOn) return;
-    if (x < 0 || y < 0 || x >= width || y >= height) return;
-    _icons[y * width + x] = slot;
   }
 
   bool _blank(Glyph g) => g.char == 0x20 && g.back == Color.black;
@@ -99,16 +90,6 @@ class RvipHtmlTerminal extends Terminal {
 
       for (var x = left; x < end; x++) {
         var g = _cells[y * width + x];
-        var slot = _icons[y * width + x];
-        if (slot != null) {
-          flush();
-          style = null;
-          row.write(
-            '<span class="ti" style="background-position:'
-            '-${slot % 16}ch -${slot ~/ 16}ch"> </span>',
-          );
-          continue;
-        }
         var s = 'color:${g.fore.cssColor}';
         if (g.back != Color.black) s += ';background:${g.back.cssColor}';
         if (s != style) {
@@ -237,13 +218,12 @@ void rvipPanes(GameScreen screen, SidebarPanel sidebar) {
     if (ground.isNotEmpty) (ground, ground.length),
   ]);
 
-  // Visible: "M<glyph><name>\t<css>\t<tile>" lines (RvipWM.visible).
+  // Visible: "M<glyph><name>\t<css>" lines (RvipWM.visible).
   var lines = <String>[];
   for (var m in screen.stagePanel.visibleMonsters) {
     var g = m.appearance as Glyph;
     lines.add(
-      'M${String.fromCharCode(g.char)}${m.breed.name}\t${g.fore.cssColor}'
-      '\t${rvipBreedTile[m.breed.name] ?? ''}',
+      'M${String.fromCharCode(g.char)}${m.breed.name}\t${g.fore.cssColor}',
     );
   }
   for (var pos in game.stage.bounds) {
@@ -252,8 +232,7 @@ void rvipPanes(GameScreen screen, SidebarPanel sidebar) {
     for (var item in game.stage.itemsAt(pos)) {
       var g = item.appearance as Glyph;
       lines.add(
-        'I${String.fromCharCode(g.char)}${item.noun.short}\t${g.fore.cssColor}'
-        '\t${rvipItemTile[item.type.name] ?? ''}',
+        'I${String.fromCharCode(g.char)}${item.noun.short}\t${g.fore.cssColor}',
       );
     }
   }

@@ -31,7 +31,6 @@ import '../popup/exit_popup.dart';
 import '../popup/forfeit_popup.dart';
 import '../popup/select_depth_popup.dart';
 import '../rvip_menu.dart';
-import '../rvip_tiles.dart';
 import '../rvip_web.dart';
 import '../storage.dart';
 import '../wizard_dialog.dart';
@@ -535,7 +534,6 @@ class GameScreen extends Screen<Input> {
 
   @override
   void resize(Vec size) {
-    rvipTermSize = size;
     // RVIP: multi-window mode: the terminal is the map, the panels are
     // page windows (rvip_web.dart).
     if (rvipMulti) {

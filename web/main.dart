@@ -11,7 +11,6 @@ import 'package:hauberk/src/ui/game/target_dialog.dart';
 import 'package:hauberk/src/ui/input.dart';
 import 'package:hauberk/src/ui/menu/main_menu_screen.dart';
 import 'package:hauberk/src/ui/menu/new_hero_screen.dart';
-import 'package:hauberk/src/ui/rvip_tiles.dart';
 import 'package:hauberk/src/ui/rvip_web.dart';
 import 'package:malison/malison.dart';
 import 'package:malison/malison_web.dart';
@@ -399,7 +398,7 @@ void _refreshDebugBoxes() {
 }
 
 /// RVIP: mirrors the screen stack (`rvipScreens`) so the stage panel knows
-/// whether the game screen is on top; hides the tile canvas on every change.
+/// whether the game screen is on top.
 class RvipUI extends UserInterface<Input> {
   RvipUI(RenderableTerminal terminal) : super(terminal);
 
@@ -429,7 +428,6 @@ class RvipUI extends UserInterface<Input> {
   void _popups() {
     _popDirty = false;
     var k = rvipScreens.lastIndexWhere(_onMap);
-    rvipMapTop = k < 0 ? null : rvipScreens[k];
     if (k == rvipScreens.length - 1) {
       rvipPopup('');
       return;
@@ -459,7 +457,6 @@ class RvipUI extends UserInterface<Input> {
   @override
   void push(Screen<Input> screen) {
     rvipScreens.add(screen);
-    rvipHide();
     super.push(screen);
     _popups();
     _inGame();
@@ -468,7 +465,6 @@ class RvipUI extends UserInterface<Input> {
   @override
   void pop([Object? result]) {
     rvipScreens.removeLast();
-    rvipHide();
     super.pop(result);
     _popups();
     _inGame();
@@ -478,7 +474,6 @@ class RvipUI extends UserInterface<Input> {
   void goTo(Screen<Input> screen) {
     rvipScreens.removeLast();
     rvipScreens.add(screen);
-    rvipHide();
     super.goTo(screen);
     _popups();
     _inGame();

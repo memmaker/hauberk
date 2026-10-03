@@ -11,7 +11,6 @@ import '../../engine.dart';
 import '../../hues.dart';
 import '../effect/effect.dart';
 import '../game/game_screen.dart';
-import '../rvip_tiles.dart';
 import 'panel.dart';
 
 /// The main gameplay area of the screen.
@@ -130,7 +129,6 @@ class StagePanel extends Panel {
           char = rng.item(_fireChars);
           (fore, back) = rng.item(HueSet.fire);
           _hasAnimatedTile = true;
-          rvipTextAt(pos.x, pos.y, Glyph.fromCharCode(char!, fore));
         } else if (tile.element == Elements.poison) {
           var amount = 0.1 + (tile.substance / 255) * 0.9;
           back = back.blend(lima, amount);
@@ -247,26 +245,7 @@ class StagePanel extends Panel {
       // TODO: Allow effects to preserve the tile's existing background color.
       effect.render(game, (x, y, glyph) {
         _drawStageGlyph(terminal, x, y, glyph);
-        rvipTextAt(x, y, glyph);
       });
-    }
-
-    // RVIP: tiles for the page (always published so it can hide/show).
-    if (rvipTilesOn) {
-      rvipPublish(
-        game,
-        identical(rvipMapTop, _gameScreen),
-        bounds,
-        showActor: (actor, tile) =>
-            tile.isVisible ||
-            actor.pos == hero.pos ||
-            Debug.showAllMonsters ||
-            game.heroCanPerceive(actor),
-        target: _gameScreen.currentTargetActor,
-      );
-    } else {
-      rvipText.clear();
-      rvipHide();
     }
   }
 
