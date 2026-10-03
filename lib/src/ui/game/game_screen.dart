@@ -56,6 +56,8 @@ class GameScreen extends Screen<Input> {
   /// coming back from a dialog where the player chose an action for the hero.
   int _pause = 0;
 
+  int _logTotal = 0;
+
   Actor? _targetActor;
   Vec? _target;
 
@@ -164,17 +166,38 @@ class GameScreen extends Screen<Input> {
     _stagePanel.drawStageGlyph(terminal, x, y, glyph);
   }
 
+  // RVIP: any key stops explore / stairs walk.
+  bool _stopWalk() {
+    if (!game.hero.isExploring) return false;
+    game.hero.waitForInput();
+    dirty();
+    return true;
+  }
+
+  @override
+  bool keyDown(int keyCode, {required bool shift, required bool alt}) {
+    if (keyCode == KeyCode.shift || keyCode == 18 /* Alt */) return false;
+    return _stopWalk();
+  }
+
   @override
   bool handleInput(Input input) {
     Action? action;
+    if (_stopWalk()) return true;
+
     switch (input) {
       case Input.quit:
         var portal = game.stage[game.hero.pos].portal;
         if (portal == TilePortals.exit) {
           ui.push(ExitPopup(_previousSave, game));
         } else {
-          game.log.error("You are not standing on an exit.");
-          dirty();
+          // RVIP: walk to the nearest known stairs and stop there.
+          var town = game.depth == 0;
+          var goal = town ? TilePortals.dungeon : TilePortals.exit;
+          game.hero.explore(
+            goal: (pos) => game.stage[pos].portal == goal,
+            stepIntoGoal: town,
+          );
         }
 
       case Input.forfeit:
@@ -199,6 +222,9 @@ class GameScreen extends Screen<Input> {
         ui.push(UseDialog(this));
       case Input.toss:
         ui.push(TossDialog(this));
+
+      case Input.explore:
+        game.hero.explore();
 
       case Input.rest:
         if (!game.hero.rest()) {
@@ -391,6 +417,15 @@ class GameScreen extends Screen<Input> {
     }
 
     if (_stagePanel.update(result)) dirty();
+
+    // RVIP: show stop messages logged while no action ran.
+    if (game.log.total != _logTotal) {
+      _logTotal = game.log.total;
+      dirty();
+    }
+
+    // RVIP: paint each explore step (~50 ms).
+    if (game.hero.isExploring) _pause = 2;
   }
 
   @override

@@ -126,6 +126,7 @@ void main() {
   _ui.keyPress.bind(Input.editSpells, KeyCode.s, shift: true);
   _ui.keyPress.bind(Input.spendExperience, KeyCode.e, shift: true);
   _ui.keyPress.bind(Input.help, KeyCode.h);
+  _ui.keyPress.bind(Input.explore, KeyCode.h, shift: true);
 
   // Laptop directions.
   _ui.keyPress.bind(Input.nw, KeyCode.i);

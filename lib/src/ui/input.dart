@@ -48,6 +48,9 @@ class Input {
   /// Rest repeatedly.
   static const rest = Input("rest");
 
+  /// RVIP: auto-explore.
+  static const explore = Input("explore");
+
   static const runN = Input("runN");
   static const runNE = Input("runNE");
   static const runE = Input("runE");

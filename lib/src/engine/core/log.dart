@@ -83,6 +83,9 @@ class Log {
 
   final messages = <Message>[];
 
+  /// RVIP: count of every message added, repeats included (explore stop).
+  int total = 0;
+
   void message(String message, [Thing? thing1, Thing? thing2, Thing? thing3]) {
     _add(LogType.message, message, thing1, thing2, thing3);
   }
@@ -115,6 +118,7 @@ class Log {
     Thing? thing3,
   ]) {
     message = _format(message, thing1, thing2, thing3);
+    total++;
 
     // See if it's a repeat of the last message.
     if (messages.isNotEmpty) {

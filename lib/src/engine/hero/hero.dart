@@ -13,6 +13,7 @@ import '../item/item.dart';
 import '../monster/monster.dart';
 import '../stage/tile.dart';
 import 'behavior.dart';
+import 'explore.dart';
 import 'hero_save.dart';
 import 'lore.dart';
 import 'skill.dart';
@@ -353,6 +354,13 @@ class Hero extends Actor {
   void run(Direction direction) {
     _behavior = RunBehavior(direction);
   }
+
+  /// RVIP: auto-explore, or walk to the nearest cell matching [goal].
+  void explore({bool Function(Vec)? goal, bool stepIntoGoal = false}) {
+    _behavior = ExploreBehavior(goal: goal, stepIntoGoal: stepIntoGoal);
+  }
+
+  bool get isExploring => _behavior is ExploreBehavior;
 
   void disturb() {
     if (_behavior is! ActionBehavior) waitForInput();
