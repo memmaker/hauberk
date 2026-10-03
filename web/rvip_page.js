@@ -1,7 +1,8 @@
-// RVIP: Hauberk's page. Windows via ../rvip-wm.js, saves/help via ../rvip-app.js.
-// Every value (heroes, layout, text font) lives in the game's own
-// IndexedDB database (RvipApp.dir), read before the game starts. Window
-// contents come from Dart (lib/src/ui/rvip_web.dart); this only places them.
+// RVIP: Hauberk's page. The whole GUI is the game's own Malison canvas
+// (web/main.dart); ../rvip-wm.js only for dropdowns and the run report,
+// saves/help via ../rvip-app.js. Every value (heroes, glyph sheet, sound)
+// lives in the game's own IndexedDB database (RvipApp.dir), read before
+// the game starts.
 (function () {
   'use strict';
   function $(id) { return document.getElementById(id); }
@@ -55,61 +56,13 @@
     }
   });
   RvipWM.dropdown($('btn-file'), $('menu-file'));
-  ['btn-file', 'btn-help', 'btn-layout'].forEach(function (id) { $(id).addEventListener('mousedown', function (e) { e.preventDefault(); }); });
+  ['btn-file', 'btn-help', 'btn-smaller', 'btn-larger'].forEach(function (id) { $(id).addEventListener('mousedown', function (e) { e.preventDefault(); }); });
   window.addEventListener('beforeunload', function (e) { if (window.rvipInGame && app.running) { e.preventDefault(); e.returnValue = ''; } });
 
-  /* ---- window contents (sent by Dart) ---- */
-  var cache = {};
-  window.rvipPane = function (id, html) {
-    if (cache[id] === html) return;
-    cache[id] = html; $('pane-' + id).innerHTML = html;
-  };
-  /* the game's dialogs over the map (empty = closed): one text cell = one map cell (w x h px, map A-/A+) */
-  var popHtml = '', popCell = '', popScroll = [0, 0];
-  window.rvipPopup = function (html, w, h) {
-    var pop = $('pop'), was = !pop.hidden;
-    if (html !== popHtml) { popHtml = html; pop.innerHTML = html; pop.hidden = !html; }
-    if (html && w && popCell !== w + 'x' + h) {
-      popCell = w + 'x' + h;
-      /* the map's own Malison sheet (main.dart _makeTerminal names it so) */
-      pop.style.setProperty('--cw', w + 'px'); pop.style.setProperty('--ch', h + 'px');
-      pop.style.setProperty('--sheet', 'url(font_' + w + (w === h ? '' : '_' + h) + '.png)');
-    }
-    /* on open, scroll the Map window to where the game drew the dialog (no move) */
-    var m = $('map'), first = html && !was && pop.querySelector('b');
-    if (html && !was) popScroll = [m.scrollLeft, m.scrollTop];
-    if (first) { m.scrollTop = 0; m.scrollLeft = 0; first.scrollIntoView({ block: 'nearest', inline: 'nearest' }); }
-    if (!html && was) { m.scrollLeft = popScroll[0]; m.scrollTop = popScroll[1]; }
-  };
-  window.rvipMessages = function (lines) { RvipWM.setLog($('msg'), lines); };
-  window.rvipVisible = function (s) {
-    RvipWM.visible($('vis'), s);
-  };
-  /* characters that fit window id's body (its own font size and face) */
-  window.rvipCols = function (id) {
-    var b = $('pane-' + id), sp = document.createElement('span');
-    sp.style.cssText = 'position:absolute;visibility:hidden'; sp.textContent = 'MMMMMMMMMM';
-    b.appendChild(sp); var cw = sp.getBoundingClientRect().width / 10; sp.remove();
-    return Math.floor((b.parentNode.clientWidth - 16) / (cw || 8));
-  };
-  function redraw() { if (window.rvipRedraw) window.rvipRedraw(); }
+  /* ---- A-/A+: the game's glyph sheet (Dart steps and stores it) ---- */
+  $('btn-smaller').onclick = function () { if (window.rvipFont) window.rvipFont(-1); };
+  $('btn-larger').onclick = function () { if (window.rvipFont) window.rvipFont(1); };
 
-  /* ---- text font (top bar): every window but the map ---- */
-  var sel = $('sel-font');
-  RvipWM.fontOptions(sel);
-  sel.addEventListener('keydown', function (e) { e.stopPropagation(); });
-  function face(n) {
-    var css = $('face-css') || document.head.appendChild(Object.assign(document.createElement('style'), { id: 'face-css' }));
-    css.textContent = n ? '.win:not(#t-map) .body, .win:not(#t-map) .txt { font-family: "' + n + '", ui-monospace, monospace !important;' + (/^(Web|Easyband)/.test(n) ? ' line-height: 1 !important;' : '') + ' }' : '';
-    if (!n) return redraw();
-    new FontFace(n, 'url(../fonts/' + n + '.woff)').load().then(function (f) { document.fonts.add(f); redraw(); }, redraw);
-  }
-  sel.onchange = function () { window.rvipPut('face', sel.value); face(sel.value); sel.blur(); };
-
-  /* ---- windows ---- */
-  var wm;
-  // Map A-/A+ = Malison font: WM size 8..17 = font 0..9 (6x8 .. 16x20), default 9x12.
-  window.rvipMapFont = function () { return RvipWM.fontSize('map') - 8; };
   /* ---- audio: the game names events at game actions (rvipSoundHook in the
    * Dart engine), web/mksounds.py synthesizes one wav per event, rvip-sound.js
    * plays them. Off by default; sounds.json is fetched only when on. No music. */
@@ -146,29 +99,9 @@
   function start() {
     snd.on = $('chk-sound').checked = store.sound === true;
     window.rvipSound('');   /* sound saved on: load sounds.json now, not on the first event */
-    var multi = { d: 'h', r: 0.2, a: { d: 'v', r: 0.6, a: 'status', b: 'vis' },
-      b: { d: 'h', r: 0.72, a: { d: 'v', r: 0.18, a: 'msg', b: 'map' }, b: 'inv' } };
-    wm = RvipWM({
-      area: $('game'), menu: $('btn-layout'),
-      wins: [{ id: 'map', title: 'Map' }, { id: 'status', title: 'Hero' }, { id: 'msg', title: 'Log messages' },
-        { id: 'inv', title: 'Inventory' }, { id: 'equip', title: 'Equipment' }, { id: 'vis', title: 'Visible' }],
-      multi: multi, single: 'map',
-      state: store.layout ? JSON.parse(store.layout) : null,
-      save: function (s) { window.rvipPut('layout', JSON.stringify(s)); },
-      size: { map: function () { return 12; } },
-      fontMax: { map: 17 },
-      zoom: { map: function (size) { if (window.rvipFont) window.rvipFont(size - 8); },
-        status: redraw, inv: redraw, equip: redraw, msg: redraw },
-      layout: function () {
-        window.rvipMulti = wm.mode() === 'multi';
-        if (window.rvipResize) window.rvipResize(); else redraw();
-      }
-    });
-    window.rvipMulti = wm.mode() === 'multi';
-    if (store.face) { sel.value = store.face; face(store.face); }
     var s = document.createElement('script');
     s.src = 'hauberk-core.js';
-    s.onload = function () { app.running = true; app.status(''); wm.apply(); };
+    s.onload = function () { app.running = true; app.status(''); };
     s.onerror = function () { app.status('Could not load the game (hauberk-core.js).', true); };
     document.body.appendChild(s);
   }

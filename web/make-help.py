@@ -26,7 +26,7 @@ esc = html.escape
 SAVING = guides_mod.SAVING[PAGE]
 
 WEB = '''<ul>
-<li>The map is the game's own screen (the game's own glyphs); hero, log messages, inventory, equipment and what you see are separate windows. <em>A−</em> / <em>A+</em> on a title bar (shown on hover) change that window's size of text; <em>Windows ▾</em> shows, hides and rearranges them (drag a title bar or the gap between windows). Dialogs and menus appear as text boxes over the map.</li>
+<li>The whole screen is the game's own: map, hero sidebar, log, item panels and every dialog are drawn by the game in its own glyphs and laid out to fit the page. <em>A−</em> / <em>A+</em> on the top bar switch between the game's glyph sizes (kept in this browser).</li>
 <li><strong>Keys:</strong> the numeric keypad, the arrow keys or the laptop keys <kbd>i</kbd> <kbd>o</kbd> <kbd>p</kbd> <kbd>k</kbd> <kbd>;</kbd> <kbd>,</kbd> <kbd>.</kbd> <kbd>/</kbd> move you. The game has no mouse support.</li>
 <li><strong>Audio ▾:</strong> sound effects made for this port (synthesized, one per kind of action), off by default; the choice is remembered. Hauberk has no music.</li>
 <li>Browsers keep a few shortcuts for themselves (<kbd>Ctrl+W</kbd>, <kbd>Ctrl+T</kbd>, <kbd>Ctrl+N</kbd>, and <kbd>Cmd</kbd> shortcuts on a Mac), so those never reach the game.</li>

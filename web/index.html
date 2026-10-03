@@ -31,43 +31,13 @@
 	button { background: #22222a; color: var(--text); border: 1px solid var(--line); border-radius: 4px;
 		padding: 2px 10px; font: inherit; cursor: pointer; }
 	button:hover { border-color: var(--accent); }
-	#bar select { background: #22222a; color: var(--text); border: 1px solid var(--line); border-radius: 4px; padding: 2px 6px; font: inherit; }
 	#status { position: fixed; left: 50%; top: 40px; transform: translateX(-50%); z-index: 5;
 		background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 8px 14px; max-width: 90vw; }
 	#status.error { border-color: #b44; color: #f99; }
 	#status[hidden], #help[hidden] { display: none; }
-	#game { position: absolute; left: 0; right: 0; top: 32px; bottom: 0; overflow: hidden; background: var(--gut); }
-	.win { position: absolute; background: #000; border: 1px solid var(--line); display: flex; flex-direction: column; overflow: hidden; }
-	.win > .t { flex: none; display: flex; align-items: center; font-size: 11px; height: 20px; padding: 0 2px 0 6px;
-		background: var(--panel); color: var(--dim); border-bottom: 1px solid var(--line); }
-	.win > .t .name { flex: 1; }
-	.win > .body { flex: 1; min-height: 0; overflow: hidden; position: relative; }
-	/* the game's own screen (map and its pop-ups), drawn by SDL at the window's size */
-	#map { overflow: auto; }
-	#map canvas { display: block; }
-	#canvas { display: block; image-rendering: pixelated; outline: none; }
-	.txt { margin: 0; padding: 4px 8px; font: 13px/1.35 ui-monospace, Menlo, monospace; white-space: pre; color: #dcdcdc; }
-	.body .txt { font-size: inherit; }
-	#msg { padding: 3px 8px; font-family: ui-monospace, Menlo, monospace; line-height: 1.4; }
-	#status-win, #msg, #equip, #inv, #vis { font-size: 13px; }
-	#inv .h { color: var(--dim); font-size: 11px; text-transform: uppercase; letter-spacing: .06em; margin-top: 4px; }
-	#inv .row { display: flex; align-items: center; gap: 6px; white-space: pre; }
-	#inv .row b { flex: none; min-width: 1.2em; text-align: center; font-weight: normal; }
-	/* list icon: the game's own tile at its size, coloured like the game does (grey tile x colour) */
-	.ic { flex: none; display: inline-block; width: 20px; height: 20px; background: currentColor;
-		-webkit-mask: var(--m) 0 0 / 20px 20px no-repeat; mask: var(--m) 0 0 / 20px 20px no-repeat; mask-mode: luminance; }
-	#t-map .wm-topl { font-size: 13px; }
-	/* the game's dialogs and full-screen screens over the map: the game's whole one-window screen as a transparent
-	   text grid (cells the game leaves alone show the map), placed and framed by the game; #map scrolls it */
-	#pop { position: absolute; left: 0; top: 0; z-index: 3; margin: 0; padding: 0; line-height: 1; font-size: 0; background: none; }
-	#pop[hidden] { display: none; }
-	#pop > div { height: var(--ch); white-space: nowrap; }
-	#pop b, #pop i { display: inline-block; vertical-align: top; height: var(--ch); }
-	#pop i { width: var(--cw); }
-	#pop i.g { image-rendering: pixelated; -webkit-mask: var(--sheet) no-repeat calc(var(--gx) * -1 * var(--cw)) calc(var(--gy) * -1 * var(--ch)) / calc(32 * var(--cw)) calc(8 * var(--ch));
-		mask: var(--sheet) no-repeat calc(var(--gx) * -1 * var(--cw)) calc(var(--gy) * -1 * var(--ch)) / calc(32 * var(--cw)) calc(8 * var(--ch)); }
-		mask-position: calc(var(--gx) * -1ch) calc(var(--gy) * -1 * var(--ch)); mask-size: 32ch calc(8 * var(--ch)); }
-	/* item tile in a text row (game sends the slot): 1em square, sheet scaled per em, nearest-neighbour */
+	/* the game's whole screen: one Malison canvas, laid out by the game to the page area */
+	#game { position: absolute; left: 0; right: 0; top: 32px; bottom: 0; overflow: auto; background: #000; }
+	#game canvas { display: block; image-rendering: pixelated; outline: none; }
 	kbd { display: inline-block; min-width: 1.7em; padding: 0 6px; text-align: center; font: 600 12px/1.6 ui-monospace, Menlo, monospace;
 		background: #22222a; border: 1px solid #3a3a46; border-bottom-width: 2px; border-radius: 4px; color: var(--text); }
 	#help { position: fixed; inset: 0; background: rgba(0,0,0,.75); display: flex; align-items: center; justify-content: center; z-index: 10; }
@@ -76,10 +46,6 @@
 	#help .head { display: flex; align-items: center; padding: 10px 16px; border-bottom: 1px solid var(--line); }
 	#help .head h2 { margin: 0; font-size: 16px; color: var(--accent); flex: 1; }
 	#help-body { overflow: auto; padding: 4px 24px 32px; outline: none; font-size: 14px; line-height: 1.6; }
-	/* the game's own glyph art (font sheet cell, 32 per row) in a text row: one cell wide, tinted by the background colour */
-	.gl { display: inline-block; width: 1ch; height: 1.2em; vertical-align: top;
-		-webkit-mask: url(font_16_20.png) no-repeat calc(var(--gx) * -1ch) calc(var(--gy) * -1.2em) / 32ch 9.6em;
-		mask: url(font_16_20.png) no-repeat calc(var(--gx) * -1ch) calc(var(--gy) * -1.2em) / 32ch 9.6em; }
 </style>
 </head>
 <body>
@@ -88,8 +54,8 @@
 	<button id="btn-help" title="Game guide and controls">Help</button>
 	<button id="btn-file" title="Save file and new game">File ▾</button>
 	<span class="sep"></span>
-	<button id="btn-layout" title="Windows: layout, show and hide">Windows ▾</button>
-	<select id="sel-font" title="Font for the text windows (the map uses the game's own glyph font: A−/A+ on its title bar)"><option value="">Font: default</option></select>
+	<button id="btn-smaller" title="Smaller glyphs (the game's own font sheets)">A−</button>
+	<button id="btn-larger" title="Larger glyphs (the game's own font sheets)">A+</button>
 	<button id="btn-audio" title="Sound effects">Audio ▾</button>
 	<div id="menu-audio">
 		<label title="Synthesized sound effects, off by default"><input type="checkbox" id="chk-sound"> Sound effects</label>
@@ -107,14 +73,7 @@
 
 <div id="status">Loading Hauberk…</div>
 
-<div id="game">
-	<div class="win" id="t-map"><div class="t"><span class="name">Map</span></div><div class="body" id="map"><pre class="txt" id="pop" hidden></pre></div></div>
-	<div class="win" id="t-status"><div class="t"><span class="name">Hero</span></div><div class="body" id="status-win"><pre class="txt" id="pane-status"></pre></div></div>
-	<div class="win" id="t-msg"><div class="t"><span class="name">Log messages</span></div><div class="body" id="msg" aria-label="Messages"></div></div>
-	<div class="win" id="t-equip"><div class="t"><span class="name">Equipment</span></div><div class="body" id="equip"><pre class="txt" id="pane-equip"></pre></div></div>
-	<div class="win" id="t-inv"><div class="t"><span class="name">Inventory</span></div><div class="body" id="inv"><pre class="txt" id="pane-inv"></pre></div></div>
-	<div class="win" id="t-vis"><div class="t"><span class="name">Visible</span></div><div class="body wm-list" id="vis"></div></div>
-</div>
+<div id="game"></div>
 
 <div id="help" hidden>
 	<div class="panel" role="dialog" aria-label="Hauberk guide">
@@ -123,7 +82,7 @@
 	</div>
 </div>
 
-<script src="../rvip-wm.js"></script>
+<script src="../rvip-wm.js"></script><!-- RvipWM.report and RvipWM.dropdown; window manager unused -->
 <script src="../rvip-app.js"></script>
 <script src="../rvip-sound.js"></script>
 <script src="rvip_page.js"></script>

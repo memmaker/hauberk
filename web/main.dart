@@ -5,12 +5,9 @@ import 'dart:math' as math;
 import 'package:hauberk/src/content.dart';
 import 'package:hauberk/src/debug.dart';
 import 'package:hauberk/src/engine.dart';
-import 'package:hauberk/src/ui/game/direction_dialog.dart';
 import 'package:hauberk/src/ui/game/game_screen.dart';
-import 'package:hauberk/src/ui/game/target_dialog.dart';
 import 'package:hauberk/src/ui/input.dart';
 import 'package:hauberk/src/ui/menu/main_menu_screen.dart';
-import 'package:hauberk/src/ui/menu/new_hero_screen.dart';
 import 'package:hauberk/src/ui/rvip_web.dart';
 import 'package:malison/malison.dart';
 import 'package:malison/malison_web.dart';
@@ -53,10 +50,18 @@ void main() {
   _addFont("16x16", 16);
   _addFont("16x20", 16, 20);
 
-  // RVIP: the map's A-/A+ (rvip-wm, kept in the page's IndexedDB layout)
-  // picks the Malison font; the page calls rvipFont / rvipResize.
-  _font = _fonts[_fontIndex()];
-  web.document.querySelector("#map")!.append(_font.canvas);
+  // RVIP: A-/A+ on the page steps through the glyph sheets; the choice is
+  // kept in the page's IndexedDB store.
+  _font =
+      _fonts[(int.tryParse(rvipGet('font') ?? '') ?? 4).clamp(
+        0,
+        _fonts.length - 1,
+      )];
+  web.document.querySelector("#game")!.append(_font.canvas);
+
+  // Scale the terminal to fit the screen.
+  web.window.addEventListener('resize', _resizeTerminal.toJS);
+
   rvipSoundHook = (name) {
     if (globalContext.has('rvipSound')) {
       globalContext.callMethod('rvipSound'.toJS, name.toJS);
@@ -67,18 +72,9 @@ void main() {
       globalContext.callMethod('rvipReport'.toJS, q.toJS);
     }
   };
-  globalContext['rvipFont'] = ((JSNumber i) => _setFont(i.toDartInt)).toJS;
-  globalContext['rvipResize'] = (() {
-    _resizeTerminal();
-    // A mode switch keeps the size: re-lay out the panels anyway.
-    for (var screen in rvipScreens) {
-      (screen as Screen<Input>).resize(_font.terminal.size);
-    }
-    _ui.dirty();
-  }).toJS;
+  globalContext['rvipFont'] = ((JSNumber d) => _setFont(d.toDartInt)).toJS;
 
   _ui = RvipUI(_font.terminal);
-  globalContext['rvipRedraw'] = (() => _ui.dirty()).toJS;
 
   ///     Key Normal                  Shift
   ///     Q   Quit (forfeit)          -
@@ -279,18 +275,13 @@ void _addFont(String name, int charWidth, [int? charHeight]) {
   }
 }
 
-int _fontIndex() {
-  var i = globalContext.has('rvipMapFont')
-      ? globalContext.callMethod<JSNumber>('rvipMapFont'.toJS).toDartInt
-      : 4;
-  return i.clamp(0, _fonts.length - 1);
-}
-
-void _setFont(int index) {
+void _setFont(int delta) {
+  var index = (_fonts.indexOf(_font) + delta).clamp(0, _fonts.length - 1);
   _font.canvas.remove();
-  _font = _fonts[index.clamp(0, _fonts.length - 1)];
-  web.document.querySelector("#map")!.append(_font.canvas);
+  _font = _fonts[index];
+  web.document.querySelector("#game")!.append(_font.canvas);
   _resizeTerminal();
+  rvipPut('font', '$index');
 }
 
 RetroTerminal _makeTerminal(
@@ -298,11 +289,10 @@ RetroTerminal _makeTerminal(
   int charWidth,
   int charHeight,
 ) {
-  // RVIP: fill the Map window's body (whole-screen menus need 80x34).
-  var body = web.document.querySelector("#map")!;
-  var small = _heroInGame && rvipMulti;
-  var width = math.max(body.clientWidth ~/ charWidth, small ? 40 : 80);
-  var height = math.max(body.clientHeight ~/ charHeight, small ? 16 : 34);
+  // RVIP: fill the page area below the bar (#game).
+  var area = web.document.querySelector("#game")!;
+  var width = math.max(area.clientWidth ~/ charWidth, 80);
+  var height = math.max(area.clientHeight ~/ charHeight, 40);
 
   var scale = web.window.devicePixelRatio.toInt();
   var canvasWidth = charWidth * width;
@@ -337,7 +327,7 @@ void _resizeTerminal() {
 
 /// See: https://stackoverflow.com/a/29715395/9457
 void _fullscreen() {
-  var div = web.document.querySelector("#map")!;
+  var div = web.document.querySelector("#game")!;
   var jsElement = div as JSObject;
 
   var methods = [
@@ -397,111 +387,35 @@ void _refreshDebugBoxes() {
   web.window.requestAnimationFrame(refresh.toJS);
 }
 
-/// RVIP: mirrors the screen stack (`rvipScreens`) so the stage panel knows
-/// whether the game screen is on top.
+/// RVIP: tracks whether a hero is in the game, so the page warns before
+/// leaving it (`window.rvipInGame`).
 class RvipUI extends UserInterface<Input> {
-  RvipUI(RenderableTerminal terminal) : super(terminal);
+  RvipUI(super.terminal);
 
-  bool _popDirty = true;
+  final _screens = <Screen<Input>>[];
 
-  @override
-  void dirty() {
-    _popDirty = true;
-    super.dirty();
-  }
-
-  @override
-  void refresh() {
-    super.refresh();
-    if (_popDirty) _popups();
-  }
-
-  /// RVIP: screens drawn on the map canvas; every screen above the topmost
-  /// one is a page pop-up (W0 rules 1, 6), rendered by the game as HTML.
-  static bool _onMap(Object s) =>
-      s is GameScreen ||
-      s is MainMenuScreen ||
-      s is NewHeroScreen ||
-      s is TargetDialog ||
-      s is DirectionDialog;
-
-  void _popups() {
-    _popDirty = false;
-    var k = rvipScreens.lastIndexWhere(_onMap);
-    if (k == rvipScreens.length - 1) {
-      rvipPopup('', 0, 0);
-      return;
-    }
-    // Map canvas: the screens up to k only (Malison drew the dialogs too).
-    var term = _font.terminal;
-    term.clear();
-    var j = k;
-    while (j > 0 && (rvipScreens[j] as Screen<Input>).isTransparent) {
-      j--;
-    }
-    for (var i = math.max(j, 0); i <= k; i++) {
-      (rvipScreens[i] as Screen<Input>).render(term);
-    }
-    term.render();
-    // Overlay: the rest, laid out as in one-window mode on the game's
-    // whole screen (multi-window: the one-window terminal for the page area).
-    var w = term.width, h = term.height;
-    var game = rvipScreens.whereType<GameScreen>().firstOrNull;
-    if (rvipMulti) {
-      var area = web.document.querySelector('#game')!;
-      w = math.max(area.clientWidth ~/ _font.charWidth, 80);
-      h = math.max((area.clientHeight - 22) ~/ _font.charHeight, 34);
-      rvipOneWindow = true;
-      game?.resize(Vec(w, h));
-    }
-    var t = RvipHtmlTerminal(w, h);
-    for (var i = k + 1; i < rvipScreens.length; i++) {
-      var screen = rvipScreens[i] as Screen<Input>;
-      // An opaque screen covers the map, as Malison draws it.
-      if (!screen.isTransparent) t.clear();
-      screen.render(t);
-    }
-    if (rvipOneWindow) {
-      rvipOneWindow = false;
-      game?.resize(term.size);
-    }
-    rvipPopup(t.toHtml(overlay: true), _font.charWidth, _font.charHeight);
+  void _inGame() {
+    globalContext['rvipInGame'] = _screens.any((s) => s is GameScreen).toJS;
   }
 
   @override
   void push(Screen<Input> screen) {
-    rvipScreens.add(screen);
+    _screens.add(screen);
     super.push(screen);
-    _popups();
     _inGame();
   }
 
   @override
   void pop([Object? result]) {
-    rvipScreens.removeLast();
+    _screens.removeLast();
     super.pop(result);
-    _popups();
     _inGame();
   }
 
   @override
   void goTo(Screen<Input> screen) {
-    rvipScreens.removeLast();
-    rvipScreens.add(screen);
+    _screens.last = screen;
     super.goTo(screen);
-    _popups();
     _inGame();
   }
-}
-
-/// RVIP: while a hero is in the game the page warns on leaving, and the
-/// terminal may shrink to the Map window (title screens need 80x34).
-bool _heroInGame = false;
-void _inGame() {
-  var now = rvipScreens.any((s) => s is GameScreen);
-  globalContext['rvipInGame'] = now.toJS;
-  if (now == _heroInGame) return;
-  _heroInGame = now;
-  if (!now) rvipClearPanes();
-  _resizeTerminal();
 }
