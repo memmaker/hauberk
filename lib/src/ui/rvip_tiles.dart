@@ -104,6 +104,7 @@ void rvipPublish(
   map['cells'] = cells.toJS;
   map['text'] = rvipText.map((e) => e.jsify()).toList().toJS;
   map['shown'] = shown.toJS;
+  map['rows'] = term.y.toJS;
   // Panel rect as fractions of the Malison canvas.
   map['rect'] = [
     panel.x / term.x,

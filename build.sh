@@ -5,6 +5,7 @@ cd "$(dirname "$0")"
 export PATH="${DART_SDK:-$HOME/Games/dart-sdk}/bin:$PATH"
 dart pub get
 rm -rf web/dist && mkdir -p web/dist
-cp -R web/*.html web/*.css web/*.png web/rvip_tiles.js web/dist/
-dart compile js -O2 -o web/dist/main.dart.js web/main.dart
-rm -f web/dist/main.dart.js.deps web/dist/main.dart.js.map
+cp -R web/*.html web/*.css web/*.png web/rvip_tiles.js web/rvip_page.js web/dist/
+cp web/getting-started.html web/dist/help.html   # stage 6 replaces this guide
+dart compile js -O2 -o web/dist/hauberk-core.js web/main.dart
+rm -f web/dist/hauberk-core.js.deps web/dist/hauberk-core.js.map

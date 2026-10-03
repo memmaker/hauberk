@@ -32,6 +32,7 @@ import '../popup/forfeit_popup.dart';
 import '../popup/select_depth_popup.dart';
 import '../rvip_menu.dart';
 import '../rvip_tiles.dart';
+import '../rvip_web.dart';
 import '../storage.dart';
 import '../wizard_dialog.dart';
 import 'direction_dialog.dart';
@@ -530,6 +531,15 @@ class GameScreen extends Screen<Input> {
   @override
   void resize(Vec size) {
     rvipTermSize = size;
+    // RVIP: multi-window mode: the terminal is the map, the panels are
+    // page windows (rvip_web.dart).
+    if (rvipMulti) {
+      _sidebarPanel.hide();
+      _logPanel.hide();
+      itemPanel.hide();
+      stagePanel.show(Rect(0, 0, size.x, size.y));
+      return;
+    }
     // Grow the sidebar slowly because extra width here is slightly useful for
     // longer monster names but otherwise isn't as useful as making the stage
     // bigger. Make sure that the size increases by multiples of three so that
@@ -573,6 +583,7 @@ class GameScreen extends Screen<Input> {
     // monsters are correctly calculated first.
     _sidebarPanel.render(terminal);
     itemPanel.render(terminal);
+    rvipPanes(this, _sidebarPanel);
   }
 
   /// Handle the hero stepping onto a portal tile.

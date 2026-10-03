@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:web/web.dart' as web;
 
 import '../engine.dart';
+import 'rvip_web.dart';
 
 /// The entrypoint for all persisted save data.
 class Storage {
@@ -40,7 +41,7 @@ class Storage {
       return;
     }
 
-    var storage = web.window.localStorage.getItem('heroes');
+    var storage = rvipGet('heroes');
     if (storage == null) return;
 
     var data = json.decode(storage) as Map<String, dynamic>;
@@ -333,7 +334,7 @@ class Storage {
     };
 
     var encoded = json.encode(data);
-    web.window.localStorage.setItem('heroes', encoded);
+    rvipPut('heroes', encoded);
     print('Saved.');
   }
 

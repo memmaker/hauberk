@@ -1,24 +1,19 @@
 // RVIP: draws the tile map the game publishes as window.rvipMap
 // (lib/src/ui/rvip_tiles.dart) on a canvas over the Malison stage panel.
 // Dumb on purpose: slots and flags come from Dart; this only scales, scrolls,
-// dims and draws. Tile set stored by name in IndexedDB ("hauberk" / prefs).
+// dims and draws. Tile set stored by name via rvipPut (IndexedDB, rvip_page.js).
 (function () {
   var SETS = [['tiles-dawn.png', 'DawnLike']];   // then None (text)
-  var TILE = 16, ZOOM = 2;   // ponytail: fixed zoom, per-window A-/A+ comes with rvip-wm (stage 5)
+  var TILE = 16;
   var cur = -1, img = null, gen = 0, canvas = null, button = null;
 
-  function idb(fn) {
-    var r = indexedDB.open('hauberk', 1);
-    r.onupgradeneeded = function () { r.result.createObjectStore('prefs'); };
-    r.onsuccess = function () { fn(r.result.transaction('prefs', 'readwrite').objectStore('prefs')); };
-    r.onerror = function () { fn(null); };
-  }
-
   function label() { if (button) button.textContent = 'Tiles: ' + (cur < 0 ? 'None' : SETS[cur][1]); }
+  // Map cell height in CSS px (the Malison font), for the tile zoom.
+  var ZOOM = 2;
 
   function use(i, save) {
     cur = i; gen++; label();
-    if (save) idb(function (s) { if (s) s.put(i < 0 ? 'None' : SETS[i][1], 'tiles'); });
+    if (save) window.rvipPut('tiles', i < 0 ? 'None' : SETS[i][1]);
     window.rvipTiles = false; img = null;
     if (i >= 0) {
       var g = gen, im = new Image();
@@ -34,21 +29,21 @@
   }
 
   window.rvipDraw = function () {
-    var m = window.rvipMap, game = document.getElementById('game');
+    var m = window.rvipMap, game = document.getElementById('map');
     var term = game && game.querySelector('canvas:not(.rvip-tiles)');
     if (!canvas) {
       if (!game) return;
       canvas = document.createElement('canvas');
       canvas.className = 'rvip-tiles';
       canvas.style.cssText = 'position:absolute;image-rendering:pixelated;background:#000';
-      game.style.position = 'relative';
       game.appendChild(canvas);
     }
     if (!img || !m || !m.shown || !term) { canvas.style.display = 'none'; return; }
-    var gr = game.getBoundingClientRect(), tr = term.getBoundingClientRect();
-    // Inside the Malison canvas border (clientLeft/Top).
-    var x0 = tr.left - gr.left + term.clientLeft, y0 = tr.top - gr.top + term.clientTop;
+    // Inside the map body's scroll area, over the Malison canvas.
+    var x0 = term.offsetLeft + term.clientLeft, y0 = term.offsetTop + term.clientTop;
     var W = term.clientWidth, H = term.clientHeight, r = m.rect;
+    // Tile zoom follows the map's A-/A+ (the Malison cell height): 8 px -> 1x, 12-16 -> 2x, 20 -> 3x.
+    ZOOM = Math.max(1, Math.round(H / m.rows / 8));
     var cw = Math.round(r[2] * W), ch = Math.round(r[3] * H);
     canvas.style.display = '';
     canvas.style.left = Math.round(x0 + r[0] * W) + 'px';
@@ -95,23 +90,14 @@
     }
   };
 
-  window.addEventListener('resize', function () { window.rvipDraw(); });
-  document.addEventListener('DOMContentLoaded', function () {
-    button = document.createElement('button');
-    button.onclick = function () { button.blur(); use(cur + 1 < SETS.length ? cur + 1 : -1, true); };
-    document.querySelector('.button-bar').appendChild(button);
-    label();
-  });
-  // Stored set name first, then the first sheet load (no default-sheet flash).
-  idb(function (s) {
-    if (!s) return use(0, false);
-    var q = s.get('tiles');
-    q.onsuccess = function () {
-      var name = q.result, i = 0;
-      if (name === 'None') i = -1;
-      else SETS.forEach(function (e, j) { if (e[1] === name) i = j; });
-      use(i, false);
-    };
-    q.onerror = function () { use(0, false); };
-  });
+  // Called by rvip_page.js once the stored set name is read (no default-sheet flash).
+  window.rvipTilesInit = function () {
+    button = document.getElementById('btn-tiles');
+    button.addEventListener('mousedown', function (e) { e.preventDefault(); });
+    button.onclick = function () { use(cur + 1 < SETS.length ? cur + 1 : -1, true); };
+    var name = window.rvipStore.tiles, i = 0;
+    if (name === 'None') i = -1;
+    else SETS.forEach(function (e, j) { if (e[1] === name) i = j; });
+    use(i, false);
+  };
 })();

@@ -9,6 +9,7 @@ import 'package:hauberk/src/ui/game/game_screen.dart';
 import 'package:hauberk/src/ui/input.dart';
 import 'package:hauberk/src/ui/menu/main_menu_screen.dart';
 import 'package:hauberk/src/ui/rvip_tiles.dart';
+import 'package:hauberk/src/ui/rvip_web.dart';
 import 'package:malison/malison.dart';
 import 'package:malison/malison_web.dart';
 import 'package:piecemeal/piecemeal.dart';
@@ -50,21 +51,19 @@ void main() {
   _addFont("16x16", 16);
   _addFont("16x20", 16, 20);
 
-  // Load the user's font preference, if any.
-  var fontName = web.window.localStorage.getItem("font");
-  _font = _fonts[1];
-  for (var thisFont in _fonts) {
-    if (thisFont.name == fontName) {
-      _font = thisFont;
-      break;
+  // RVIP: the map's A-/A+ (rvip-wm, kept in the page's IndexedDB layout)
+  // picks the Malison font; the page calls rvipFont / rvipResize.
+  _font = _fonts[_fontIndex()];
+  web.document.querySelector("#map")!.append(_font.canvas);
+  globalContext['rvipFont'] = ((JSNumber i) => _setFont(i.toDartInt)).toJS;
+  globalContext['rvipResize'] = (() {
+    _resizeTerminal();
+    // A mode switch keeps the size: re-lay out the panels anyway.
+    for (var screen in rvipScreens) {
+      (screen as Screen<Input>).resize(_font.terminal.size);
     }
-  }
-
-  var div = web.document.querySelector("#game")!;
-  div.append(_font.canvas);
-
-  // Scale the terminal to fit the screen.
-  web.window.addEventListener('resize', _resizeTerminal.toJS);
+    _ui.dirty();
+  }).toJS;
 
   _ui = RvipUI(_font.terminal);
   globalContext['rvipRedraw'] = (() => _ui.dirty()).toJS;
@@ -267,28 +266,20 @@ void _addFont(String name, int charWidth, [int? charHeight]) {
     });
   }
 
-  // Make a button for it.
-  var button = web.HTMLButtonElement();
-  button.innerHTML = name.toJS;
-  button.onClick.listen((_) {
-    for (var i = 0; i < _fonts.length; i++) {
-      if (_fonts[i].name == name) {
-        _font = _fonts[i];
-        web.document.querySelector("#game")!.append(_font.canvas);
-      } else {
-        _fonts[i].canvas.remove();
-      }
-    }
+}
 
-    _resizeTerminal();
+int _fontIndex() {
+  var i = globalContext.has('rvipMapFont')
+      ? globalContext.callMethod<JSNumber>('rvipMapFont'.toJS).toDartInt
+      : 4;
+  return i.clamp(0, _fonts.length - 1);
+}
 
-    if (Debug.enabled) _refreshDebugBoxes();
-
-    // Remember the preference.
-    web.window.localStorage.setItem('font', name);
-  });
-
-  web.document.querySelector('.button-bar')!.appendChild(button);
+void _setFont(int index) {
+  _font.canvas.remove();
+  _font = _fonts[index.clamp(0, _fonts.length - 1)];
+  web.document.querySelector("#map")!.append(_font.canvas);
+  _resizeTerminal();
 }
 
 RetroTerminal _makeTerminal(
@@ -296,11 +287,11 @@ RetroTerminal _makeTerminal(
   int charWidth,
   int charHeight,
 ) {
-  var width = (web.window.innerWidth - 20) ~/ charWidth;
-  var height = (web.window.innerHeight - 30) ~/ charHeight;
-
-  width = math.max(width, 80);
-  height = math.max(height, 40);
+  // RVIP: fill the Map window's body (whole-screen menus need 80x34).
+  var body = web.document.querySelector("#map")!;
+  var small = _heroInGame && rvipMulti;
+  var width = math.max(body.clientWidth ~/ charWidth, small ? 40 : 80);
+  var height = math.max(body.clientHeight ~/ charHeight, small ? 16 : 34);
 
   var scale = web.window.devicePixelRatio.toInt();
   var canvasWidth = charWidth * width;
@@ -335,7 +326,7 @@ void _resizeTerminal() {
 
 /// See: https://stackoverflow.com/a/29715395/9457
 void _fullscreen() {
-  var div = web.document.querySelector("#game")!;
+  var div = web.document.querySelector("#map")!;
   var jsElement = div as JSObject;
 
   var methods = [
@@ -405,6 +396,7 @@ class RvipUI extends UserInterface<Input> {
     rvipScreens.add(screen);
     rvipHide();
     super.push(screen);
+    _inGame();
   }
 
   @override
@@ -412,6 +404,7 @@ class RvipUI extends UserInterface<Input> {
     rvipScreens.removeLast();
     rvipHide();
     super.pop(result);
+    _inGame();
   }
 
   @override
@@ -420,5 +413,17 @@ class RvipUI extends UserInterface<Input> {
     rvipScreens.add(screen);
     rvipHide();
     super.goTo(screen);
+    _inGame();
   }
+}
+
+/// RVIP: while a hero is in the game the page warns on leaving, and the
+/// terminal may shrink to the Map window (title screens need 80x34).
+bool _heroInGame = false;
+void _inGame() {
+  var now = rvipScreens.any((s) => s is GameScreen);
+  globalContext['rvipInGame'] = now.toJS;
+  if (now == _heroInGame) return;
+  _heroInGame = now;
+  _resizeTerminal();
 }
