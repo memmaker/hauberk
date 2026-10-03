@@ -429,7 +429,7 @@ class RvipUI extends UserInterface<Input> {
     _popDirty = false;
     var k = rvipScreens.lastIndexWhere(_onMap);
     if (k == rvipScreens.length - 1) {
-      rvipPopup('');
+      rvipPopup('', 0, 0);
       return;
     }
     // Map canvas: the screens up to k only (Malison drew the dialogs too).
@@ -443,15 +443,29 @@ class RvipUI extends UserInterface<Input> {
       (rvipScreens[i] as Screen<Input>).render(term);
     }
     term.render();
-    // Pop-up: the rest, at least the game's old 80x34 screen.
-    var t = RvipHtmlTerminal(
-      math.max(term.width, 80),
-      math.max(term.height, 34),
-    );
-    for (var i = k + 1; i < rvipScreens.length; i++) {
-      (rvipScreens[i] as Screen<Input>).render(t);
+    // Overlay: the rest, laid out as in one-window mode on the game's
+    // whole screen (multi-window: the one-window terminal for the page area).
+    var w = term.width, h = term.height;
+    var game = rvipScreens.whereType<GameScreen>().firstOrNull;
+    if (rvipMulti) {
+      var area = web.document.querySelector('#game')!;
+      w = math.max(area.clientWidth ~/ _font.charWidth, 80);
+      h = math.max((area.clientHeight - 22) ~/ _font.charHeight, 34);
+      rvipOneWindow = true;
+      game?.resize(Vec(w, h));
     }
-    rvipPopup(t.toHtml(crop: true));
+    var t = RvipHtmlTerminal(w, h);
+    for (var i = k + 1; i < rvipScreens.length; i++) {
+      var screen = rvipScreens[i] as Screen<Input>;
+      // An opaque screen covers the map, as Malison draws it.
+      if (!screen.isTransparent) t.clear();
+      screen.render(t);
+    }
+    if (rvipOneWindow) {
+      rvipOneWindow = false;
+      game?.resize(term.size);
+    }
+    rvipPopup(t.toHtml(overlay: true), _font.charWidth, _font.charHeight);
   }
 
   @override

@@ -64,19 +64,22 @@
     if (cache[id] === html) return;
     cache[id] = html; $('pane-' + id).innerHTML = html;
   };
-  /* pop-up over the map: the game's dialogs as HTML (empty = closed); text follows Messages' size */
-  var popHtml = '';
-  function placePop() {
-    var pop = $('pop'); if (pop.hidden) return;
-    pop.style.fontSize = RvipWM.fontSize('msg') + 'px';
-    RvipWM.popup(pop, { center: true });
-  }
-  window.rvipPopup = function (html) {
-    if (html === popHtml) return;
+  /* the game's dialogs over the map (empty = closed): one text cell = one map cell (w x h px, map A-/A+) */
+  var popHtml = '', popCell = '', popScroll = [0, 0];
+  window.rvipPopup = function (html, w, h) {
     var pop = $('pop'), was = !pop.hidden;
-    popHtml = html; pop.firstChild.innerHTML = html; pop.hidden = !html;
-    if (!was) pop.scrollTop = 0;
-    placePop();
+    if (html !== popHtml) { popHtml = html; pop.innerHTML = html; pop.hidden = !html; }
+    if (html && w && popCell !== w + 'x' + h) {
+      popCell = w + 'x' + h;
+      pop.style.setProperty('--ch', h + 'px'); pop.style.lineHeight = h + 'px'; pop.style.fontSize = h + 'px';
+      var sp = document.createElement('span'); sp.textContent = 'MMMMMMMMMM'; pop.appendChild(sp);
+      pop.style.fontSize = (h * w * 10 / sp.getBoundingClientRect().width) + 'px'; sp.remove();
+    }
+    /* on open, scroll the Map window to where the game drew the dialog (no move) */
+    var m = $('map'), first = html && !was && pop.querySelector('span[style*=background]');
+    if (html && !was) popScroll = [m.scrollLeft, m.scrollTop];
+    if (first) { m.scrollTop = 0; m.scrollLeft = 0; first.scrollIntoView({ block: 'nearest', inline: 'nearest' }); }
+    if (!html && was) { m.scrollLeft = popScroll[0]; m.scrollTop = popScroll[1]; }
   };
   window.rvipMessages = function (lines) { RvipWM.setLog($('msg'), lines); };
   window.rvipVisible = function (s) {
@@ -155,11 +158,10 @@
       size: { map: function () { return 12; } },
       fontMax: { map: 17 },
       zoom: { map: function (size) { if (window.rvipFont) window.rvipFont(size - 8); },
-        status: redraw, inv: redraw, equip: redraw, msg: function () { placePop(); } },
+        status: redraw, inv: redraw, equip: redraw, msg: redraw },
       layout: function () {
         window.rvipMulti = wm.mode() === 'multi';
         if (window.rvipResize) window.rvipResize(); else redraw();
-        placePop();
       }
     });
     window.rvipMulti = wm.mode() === 'multi';

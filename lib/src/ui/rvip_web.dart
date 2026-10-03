@@ -20,7 +20,12 @@ final List<Object> rvipScreens = [];
 
 /// Multi-window mode: the Malison terminal is the map only, the side panels
 /// are rvip-wm windows. Set by the page (`window.rvipMulti`).
-bool get rvipMulti => globalContext['rvipMulti']?.dartify() == true;
+bool get rvipMulti =>
+    !rvipOneWindow && globalContext['rvipMulti']?.dartify() == true;
+
+/// Set while dialogs render for the map overlay: the game lays out its
+/// screen as in one-window mode.
+bool rvipOneWindow = false;
 
 /// Width in characters of window [id]'s body (the page measures it).
 int _cols(String id) {
@@ -43,10 +48,10 @@ class RvipHtmlTerminal extends Terminal {
   final int width;
   @override
   final int height;
-  final List<Glyph> _cells;
+  final List<Glyph?> _cells;
 
   RvipHtmlTerminal(this.width, this.height)
-    : _cells = List.filled(width * height, Glyph.clear);
+    : _cells = List.filled(width * height, null);
 
   @override
   Vec get size => Vec(width, height);
@@ -57,26 +62,19 @@ class RvipHtmlTerminal extends Terminal {
     _cells[y * width + x] = glyph;
   }
 
-  bool _blank(Glyph g) => g.char == 0x20 && g.back == Color.black;
+  bool _blank(Glyph? g) => g == null || g.char == 0x20 && g.back == Color.black;
 
   /// Rows without trailing blanks, no empty rows at the bottom (W0 rule 5).
-  /// [crop]: also drop blank rows at the top and blank columns at the left
-  /// (a dialog drawn somewhere on a whole-screen terminal).
-  String toHtml({bool crop = false}) {
+  /// [overlay]: the whole grid over the map; cells nothing drew stay
+  /// transparent, drawn cells keep their background (black too).
+  String toHtml({bool overlay = false}) {
     var rows = <String>[];
-    var left = 0, top = 0;
-    if (crop) {
-      left = width;
-      top = height;
-      for (var i = 0; i < _cells.length; i++) {
-        if (_blank(_cells[i])) continue;
-        left = left < i % width ? left : i % width;
-        top = top < i ~/ width ? top : i ~/ width;
-      }
-    }
-    for (var y = top; y < height; y++) {
+    for (var y = 0; y < height; y++) {
       var end = width;
-      while (end > 0 && _blank(_cells[y * width + end - 1])) {
+      while (end > 0 &&
+          (overlay
+              ? _cells[y * width + end - 1] == null
+              : _blank(_cells[y * width + end - 1]))) {
         end--;
       }
       var row = StringBuffer();
@@ -84,14 +82,20 @@ class RvipHtmlTerminal extends Terminal {
       var run = StringBuffer();
       void flush() {
         if (run.isEmpty) return;
-        row.write('<span style="$style">$run</span>');
+        row.write(style == '' ? '$run' : '<span style="$style">$run</span>');
         run.clear();
       }
 
-      for (var x = left; x < end; x++) {
+      for (var x = 0; x < end; x++) {
         var g = _cells[y * width + x];
-        var s = 'color:${g.fore.cssColor}';
-        if (g.back != Color.black) s += ';background:${g.back.cssColor}';
+        var s = '';
+        if (g != null) {
+          s = 'color:${g.fore.cssColor}';
+          if (overlay || g.back != Color.black) {
+            s += ';background:${g.back.cssColor}';
+          }
+        }
+        g ??= Glyph.clear;
         if (s != style) {
           flush();
           style = s;
@@ -104,9 +108,13 @@ class RvipHtmlTerminal extends Terminal {
           var slot = unicodeMap[code] ?? code;
           flush();
           style = null;
+          var icon =
+              '<span class="gl" style="background:${g.fore.cssColor};'
+              '--gx:${slot % 32};--gy:${slot ~/ 32}"> </span>';
           row.write(
-            '<span class="gl" style="background:${g.fore.cssColor};'
-            '--gx:${slot % 32};--gy:${slot ~/ 32}"> </span>',
+            overlay
+                ? '<span style="background:${g.back.cssColor}">$icon</span>'
+                : icon,
           );
           continue;
         }
@@ -121,45 +129,19 @@ class RvipHtmlTerminal extends Terminal {
       flush();
       rows.add(row.toString());
     }
-    // Help boxes run off the screen's bottom edge on the canvas: close them.
-    if (crop) {
-      var y = height - 1, row = StringBuffer(), open = -1, col = left;
-      for (var x = left; x < width; x++) {
-        var g = _cells[y * width + x];
-        if (g.char != CharCode.boxDrawingsLightVertical) continue;
-        if (open < 0) {
-          row.write(' ' * (x - col));
-          open = x;
-        } else {
-          row.write(
-            '<span style="color:${g.fore.cssColor}">└${'─' * (x - open - 1)}┘'
-            '</span>',
-          );
-          open = -1;
-          col = x + 1;
-        }
-      }
-      if (row.isNotEmpty) rows.add(row.toString());
-    }
     while (rows.isNotEmpty && rows.last.isEmpty) {
       rows.removeLast();
-    }
-    // A dialog and its key help drawn far apart: close long blank gaps.
-    if (crop) {
-      for (var i = rows.length - 1; i >= 3; i--) {
-        if (rows[i].isEmpty && rows[i - 1].isEmpty && rows[i - 2].isEmpty) {
-          rows.removeAt(i);
-        }
-      }
     }
     return rows.join('\n');
   }
 }
 
-/// The page pop-up over the map (`RvipWM.popup`); empty hides it.
-void rvipPopup(String html) {
+/// The dialogs over the map as a transparent whole-screen grid, one cell per
+/// map cell ([w] x [h] px, the map's A-/A+), so it lines up with the game's
+/// own one-window screen; empty hides it.
+void rvipPopup(String html, int w, int h) {
   if (globalContext.has('rvipPopup')) {
-    globalContext.callMethod('rvipPopup'.toJS, html.toJS);
+    globalContext.callMethod('rvipPopup'.toJS, html.toJS, w.toJS, h.toJS);
   }
 }
 

@@ -7,7 +7,6 @@ import '../../engine.dart';
 import '../game/game_screen.dart';
 import '../input.dart';
 import '../panel/item_panel.dart';
-import '../rvip_web.dart';
 import '../widget/draw.dart';
 import 'item_renderer.dart';
 
@@ -229,11 +228,6 @@ abstract class ItemDialog extends Screen<Input> {
   @override
   void render(Terminal terminal) {
     var itemCount = switch (_location) {
-      // RVIP: page pop-ups are trimmed to the items (W0 rule 5).
-      ItemLocation.inventory when terminal is RvipHtmlTerminal => math.max(
-        items.length,
-        1,
-      ),
       ItemLocation.inventory => ItemLocation.inventory.capacity,
       ItemLocation.equipment => gameScreen.game.hero.equipment.capacity,
       // On the rare chance that there are a ton of items on the ground, don't
