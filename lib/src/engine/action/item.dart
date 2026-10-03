@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:piecemeal/piecemeal.dart';
 
 import '../core/element.dart';
+import '../core/event.dart';
 import '../hero/hero.dart';
 import '../item/equipment.dart';
 import '../item/inventory.dart';
@@ -90,6 +91,7 @@ class PickUpAction extends Action {
     }
 
     hero.pickUp(game, item);
+    rvipSound('pickup');
     return ActionResult.success;
   }
 }
@@ -122,6 +124,7 @@ class DropAction extends ItemAction {
     }
 
     game.stage.addItem(dropped, actor!.pos);
+    rvipSound('drop');
     return ActionResult.success;
   }
 }
@@ -172,6 +175,7 @@ class EquipAction extends ItemAction {
     }
 
     show("{1} equip[s] {the 2}.", actor, equipped);
+    rvipSound('equip');
 
     if (item.emanationLevel > 0) {
       game.stage.actorEmanationChanged();
@@ -236,6 +240,7 @@ class UseAction extends ItemAction {
     if (location == ItemLocation.onGround) hero.pickUp(game, item);
 
     hero.lore.useItem(item);
+    rvipSound('use');
     // TODO: If using an item can change hero properties, refresh them.
 
     return alternate(useAction);

@@ -115,7 +115,35 @@
   var wm;
   // Map A-/A+ = Malison font: WM size 8..17 = font 0..9 (6x8 .. 16x20), default 9x12.
   window.rvipMapFont = function () { return RvipWM.fontSize('map') - 8; };
+  /* ---- audio: the game names events at game actions (rvipSoundHook in the
+   * Dart engine), web/mksounds.py synthesizes one wav per event, rvip-sound.js
+   * plays them. Off by default; sounds.json is fetched only when on. No music. */
+  var snd = { on: false, cfg: null, loading: false, played: 0 };
+  window.rvipAudio = function () { return snd; };
+  window.rvipSound = function (name) {
+    if (!snd.on) return;
+    if (!snd.cfg) {
+      if (!snd.loading) {
+        snd.loading = true;
+        fetch('sound/sounds.json').then(function (r) { return r.json(); })
+          .then(function (c) { snd.cfg = c; }).catch(function () { snd.loading = false; });
+      }
+      return;
+    }
+    var f = snd.cfg[name];
+    if (!f) return;
+    snd.played++;
+    RVIPSound.play([f], 0.6);
+  };
+  RvipWM.dropdown($('btn-audio'), $('menu-audio'));
+  $('btn-audio').addEventListener('mousedown', function (e) { e.preventDefault(); });
+  $('chk-sound').onchange = function () {
+    snd.on = this.checked; window.rvipPut('sound', snd.on); window.rvipSound(''); this.blur();
+  };
+
   function start() {
+    snd.on = $('chk-sound').checked = store.sound === true;
+    window.rvipSound('');   /* sound saved on: load sounds.json now, not on the first event */
     var multi = { d: 'h', r: 0.2, a: { d: 'v', r: 0.6, a: 'status', b: 'vis' },
       b: { d: 'h', r: 0.72, a: { d: 'v', r: 0.18, a: 'msg', b: 'map' }, b: 'inv' } };
     wm = RvipWM({

@@ -50,3 +50,9 @@ Thanks for understanding.
 [dungeon]: https://i.imgur.com/AbaPbvU.png
 [sdk]: https://webdev.dartlang.org/tools/sdk
 [mit license]: https://github.com/munificent/hauberk/blob/master/COPYRIGHT
+
+## Web port (RVIP)
+
+Branch `rvip-port` of [memmaker/hauberk](https://github.com/memmaker/hauberk), played at
+https://ruzzoli.de/roguelikes/hauberk/ . Tiles: DawnLike by DragonDePlatino, palette by
+DawnBringer, CC BY 4.0. Sound effects are synthesized at build time (`web/mksounds.py`).

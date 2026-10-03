@@ -58,6 +58,11 @@ void main() {
   // picks the Malison font; the page calls rvipFont / rvipResize.
   _font = _fonts[_fontIndex()];
   web.document.querySelector("#map")!.append(_font.canvas);
+  rvipSoundHook = (name) {
+    if (globalContext.has('rvipSound')) {
+      globalContext.callMethod('rvipSound'.toJS, name.toJS);
+    }
+  };
   globalContext['rvipFont'] = ((JSNumber i) => _setFont(i.toDartInt)).toJS;
   globalContext['rvipResize'] = (() {
     _resizeTerminal();

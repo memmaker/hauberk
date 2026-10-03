@@ -209,6 +209,7 @@ class Hit {
         if (strike < 0) {
           if (canSeeAttacker || canSeeDefender) {
             action.log(defense.message, defenderNoun, attackNoun);
+            rvipSound('miss');
           }
           return 0;
         }
@@ -231,6 +232,10 @@ class Hit {
 
     if (attacker != null) {
       attacker.onGiveDamage(action, defender, damage);
+    }
+
+    if (canSeeAttacker || canSeeDefender) {
+      rvipSound(defender is Hero ? 'hurt' : 'hit');
     }
 
     if (defender.takeDamage(action, damage, attackNoun, attacker)) {

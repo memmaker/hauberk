@@ -7,6 +7,11 @@ import 'element.dart';
 /// Describes a single "interesting" thing that occurred during a call to
 /// [Game.update()]. In general, events correspond to things that a UI is likely
 /// to want to display visually in some form.
+/// RVIP: web sound hook, set by the web frontend (null elsewhere). Called at
+/// game actions with an event name; the page maps it to a sound file.
+void Function(String name)? rvipSoundHook;
+void rvipSound(String name) => rvipSoundHook?.call(name);
+
 class Event {
   final EventType type;
   // TODO: Having these all be nullable leads to a lot of "!" in effects.

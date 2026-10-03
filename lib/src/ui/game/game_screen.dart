@@ -440,6 +440,7 @@ class GameScreen extends Screen<Input> {
         });
 
         _storage.save();
+        rvipSound('stairs');
         ui.goTo(GameScreen.town(_storage, game.content, game.hero.save));
 
       case (SelectDepthPopup(), int depth):
@@ -448,6 +449,7 @@ class GameScreen extends Screen<Input> {
         ui.push(LoadingDialog(game.hero.save, game.content, depth));
 
       case (LoadingDialog(), var newGame as Game):
+        rvipSound('stairs');
         ui.goTo(GameScreen(_storage, newGame));
 
       case (ForfeitPopup(), true) when game.depth > 0:
@@ -512,6 +514,7 @@ class GameScreen extends Screen<Input> {
 
     // See if the hero died.
     if (!game.hero.isAlive) {
+      rvipSound('death');
       ui.goTo(GameOverScreen(_storage, game.hero.save, _previousSave));
       return;
     }

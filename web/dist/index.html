@@ -74,6 +74,10 @@
 	<button id="btn-layout" title="Windows: layout, show and hide">Windows ▾</button>
 	<button id="btn-tiles" title="Map: DawnLike tiles or the game's own glyphs">Tiles</button>
 	<select id="sel-font" title="Font for the text windows (the map uses the game's own glyph font: A−/A+ on its title bar)"><option value="">Font: default</option></select>
+	<button id="btn-audio" title="Sound effects">Audio ▾</button>
+	<div id="menu-audio">
+		<label title="Synthesized sound effects, off by default"><input type="checkbox" id="chk-sound"> Sound effects</label>
+	</div>
 	<div id="menu-file">
 		<button id="btn-export" title="Download your saved heroes">Export save</button>
 		<button id="btn-import" title="Load saved heroes from disk">Import save</button>
@@ -106,6 +110,7 @@
 
 <script src="../rvip-wm.js"></script>
 <script src="../rvip-app.js"></script>
+<script src="../rvip-sound.js"></script>
 <script src="rvip_tiles.js"></script>
 <script src="rvip_page.js"></script>
 </body>

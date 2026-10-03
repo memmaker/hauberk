@@ -5,6 +5,7 @@ import 'package:piecemeal/piecemeal.dart';
 
 // TODO: Directly importing this is a little hacky. Put "appearance" on Element?
 import '../../content/elements.dart';
+import '../../content/events.dart';
 import '../../debug.dart';
 import '../../engine.dart';
 import '../../hues.dart';
@@ -58,9 +59,13 @@ class StagePanel extends Panel {
     _frame++;
 
     if (result case ProgressUpdateResult(:var events)) {
+      var sounds = <String>{};
       for (var event in events) {
         addEffects(_effects, event);
+        if (_rvipEventSound(event) case var name?) sounds.add(name);
       }
+      // RVIP: one sound per kind per update (bolts send an event per tile).
+      sounds.forEach(rvipSound);
     }
 
     var hadEffects = _effects.isNotEmpty;
@@ -367,3 +372,15 @@ class StagePanel extends Panel {
     _renderOffset = Vec(offsetX, offsetY);
   }
 }
+
+/// RVIP: sound for a game event (by event type, never by message text).
+String? _rvipEventSound(Event event) => switch (event.type) {
+  EventType.die when event.actor is! Hero => 'kill',
+  EventType.toss => 'throw',
+  EventType.gold => 'gold',
+  Events.bolt when event.element == Element.none => 'shoot',
+  Events.bolt || Events.cone => 'spell',
+  Events.heal => 'heal',
+  Events.teleport => 'teleport',
+  _ => null,
+};

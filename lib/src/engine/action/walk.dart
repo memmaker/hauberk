@@ -98,6 +98,7 @@ class OpenDoorAction extends Action {
     game.stage.tileOpacityChanged();
 
     if (actor is Hero) hero.regenerateFocus(1);
+    rvipSound('door');
     return succeed('{1} open[s] the door.', actor);
   }
 }
