@@ -8,7 +8,8 @@
 - Stage 4 (Tiles) done.
 - Stage 5 (Web page and windows) done incl. pop-ups.
 - Stage 6 (Docs and sound) done.
-- Stage 7 (Publish) done; next: stage 8 (shrine).
+- Stage 7 (Publish) done.
+- Stage 8 (Shrine) done; next: stage 9 (graveyard + leaderboard).
 - Folder `~/Games/hauberk`, branch `rvip-port`, base upstream `master` @ 6c5c684c (other branches: `areas` 2016, `skills-reboot` 2025, `temp-chain-lightning` WIP; master is newest complete). Upstream commit untouched = pristine commit.
 - Case O: Dart game on the Malison canvas terminal (own panels: hero, equipment, inventory, on-ground, log). Frontend: `web/main.dart`, `web/index.html`, UI in `lib/src/ui/`.
 - Build: `./build.sh` → `web/dist` (`dart pub get`, `dart compile js -O2 web/main.dart`, copies html/css/fonts). Dart SDK 3.13.5 at `~/Games/dart-sdk` (override with `DART_SDK`).
@@ -55,3 +56,5 @@
 - Open (stage 6): stairs/death/combat sounds not heard in the pane (rAF ~1.5 fps walk too slow); same bridge as `use`. Upstream `h` help screen is the game's own (old) text.
 - Stage 7: README header (upstream 6c5c684c link + compare `6c5c684c...rvip-port`; default branch on memmaker is `rvip-port`, no `main`). Version: no upstream tags/version; "master (2026-09-14) @ 6c5c684c" on card, Help, Docs. `web/dist` now untracked (`.gitignore` had `out/web/dist/` glued on one line). Card `img/hauberk.png` = 60 DawnLike breed tiles from `web/tiles-dawn.png`; tree: standalone `insp` 2012 (first commit 2012-02-19, d905e88e), family Modern; og block in `web/index.html`. roguelikes-index 19a771c, live checked (index diff clean, og:image, core.js md5).
 - Open (stage 7): RogueBasin down (522), year from git history only; `make-help.py` needs `~/Desktop/Games/Roguelikes/Docs` (a fresh clone elsewhere can't build help.html, as IA); no Info button until the shrine exists.
+- Stage 8: `roguelikes-index/shrine/hauberk.html` + `shrine/hauberk/` (upstream getting-started.html, quick-reference.html, styles.css, COPYRIGHT.txt; MIT). Info button + tree ✦ live; game page h1 already linked. Card claim "skills that grow by use" was wrong (skills are bought with experience via `E`, ExperienceDialog; the by-use "discipline" mechanic is gone, only a TODO in classes.dart) → fixed on card and og description; "hundred-level dungeon" correct (`Stage.maxDepth = 100`). Cheats: upstream `Debug.enabled = true` (lib/src/debug.dart) → our build has the wizard menu Shift+Alt+W and any-depth select.
+- Open (stage 8): no walkthrough exists; upstream manual is self-declared out of date and overflows at 375 px (ASCII art, copied as is); `Debug.enabled = true` is live (user may want it off for stage 9 leaderboard fairness); no win path known (Nameless Unmaker at depth 100 has no win hook) – check in stage 9.
