@@ -4,4 +4,5 @@ build/
 gh-pages/
 .idea
 .pub/
-out/
+out/web/dist/
+.dart_tool/
