@@ -6,7 +6,8 @@
 - Stage 2 (Explore + stairs) done.
 - Stage 3 (Enter menu + inventory) done.
 - Stage 4 (Tiles) done.
-- Stage 5 (Web page and windows) done incl. pop-ups; next: stage 6 (docs and sound).
+- Stage 5 (Web page and windows) done incl. pop-ups.
+- Stage 6 (Docs and sound) done; next: stage 7 (publish).
 - Folder `~/Games/hauberk`, branch `rvip-port`, base upstream `master` @ 6c5c684c (other branches: `areas` 2016, `skills-reboot` 2025, `temp-chain-lightning` WIP; master is newest complete). Upstream commit untouched = pristine commit.
 - Case O: Dart game on the Malison canvas terminal (own panels: hero, equipment, inventory, on-ground, log). Frontend: `web/main.dart`, `web/index.html`, UI in `lib/src/ui/`.
 - Build: `./build.sh` → `web/dist` (`dart pub get`, `dart compile js -O2 web/main.dart`, copies html/css/fonts). Dart SDK 3.13.5 at `~/Games/dart-sdk` (override with `DART_SDK`).
@@ -46,4 +47,9 @@
 - Town `q` walk: not a regression; the engine walks to the entrance in one press (`test/rvip/town_walk_test.dart`); the pane runs rAF at ~1.5 fps so it looked like one step.
 - Tested in the pane: inventory, Enter menu, depth popup, shop (buy + count screen), death screen -> title -> play, resize 760x500 with a pop-up open (scrolls, 13 px kept), real divider drag with the Enter menu open; smoke.cjs + resize.cjs pass, no console errors; idbtest.cjs is Emscripten-only (needs `Module`), not applicable; `dart test` 104 pass.
 - Open (stage 5): pop-ups have no mouse (Malison has none); pop-up item rows drawn through a sub-terminal (`terminal.rect`) show glyphs, not icons; no prompt line (Hauberk asks in dialogs); Audio menu in stage 6; tiny map window: hero can sit off-centre (terminal minimum 40x16).
+- Stage 6 docs: Docs entry `hauberk.html` in `~/Desktop/Games/Roguelikes/Docs/build-docs.py` (`parse_hauberk`: key list from the Enter menu table `GameScreen._commands`, each key asserted against `web/main.dart` binds, plus move rows) + guide/Saving in `guides.py`. `web/make-help.py` (IA pattern) writes `dist/help.html` from it; build.sh runs it (getting-started.html no longer copied as help). Credits: Bob Nystrom, MIT (COPYRIGHT), upstream 6c5c684c; DawnLike (DragonDePlatino, DawnBringer, CC BY 4.0) on Help "About this version" and README.md "Web port".
+- Sound search: no Hauberk audio exists (web search; upstream `stage/sound.dart` is monster hearing, not audio). Effects synthesized by `web/mksounds.py` (Avanor synth, levelled to -18 dBFS RMS) into `dist/sound/` + `sounds.json`; events asserted against the code. No music, no Music toggle.
+- Sound hooks: engine global `rvipSoundHook`/`rvipSound(name)` in `lib/src/engine/core/event.dart` (null in tests); calls in combat.dart (hit/hurt/miss, only when visible), item.dart (pickup/drop/equip/use), walk.dart (door); UI: `_rvipEventSound` in stage_panel.dart maps game Events (kill/throw/gold/shoot/spell/heal/teleport, one per kind per update), game_screen.dart stairs (dungeon/town) + death. `web/main.dart` sets the hook -> `window.rvipSound`; page: Audio ▾ / Sound effects in rvip_page.js, IndexedDB key `sound`, off by default, sounds.json fetched only when on (or at load if saved on).
+- Tested in the pane: Help opens (31 keys, credits), Esc closes; Sound on by real click -> use.wav played on eating; saved on over reload; off -> no sound fetch. `dart test` 104 pass. Deployed aef6edf9.
+- Open (stage 6): stairs/death/combat sounds not heard in the pane (rAF ~1.5 fps walk too slow); same bridge as `use`. Upstream `h` help screen is the game's own (old) text.
 
