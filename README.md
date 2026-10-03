@@ -1,3 +1,8 @@
+> **Web port (RVIP).** This is [Hauberk](https://github.com/munificent/hauberk) by Bob Nystrom at upstream commit
+> [`6c5c684c`](https://github.com/munificent/hauberk/tree/6c5c684c) (master, 2026-09-14), ported to the browser.
+> Our changes: [compare 6c5c684c...rvip-port](https://github.com/memmaker/hauberk/compare/6c5c684c...rvip-port).
+> Play: https://ruzzoli.de/roguelikes/hauberk/
+
 ![Splash screen][splash]
 
 Hauberk is a [roguelike][], an ASCII-art based procedurally-generated dungeon
