@@ -31,6 +31,7 @@ import '../popup/exit_popup.dart';
 import '../popup/forfeit_popup.dart';
 import '../popup/select_depth_popup.dart';
 import '../rvip_menu.dart';
+import '../rvip_tiles.dart';
 import '../storage.dart';
 import '../wizard_dialog.dart';
 import 'direction_dialog.dart';
@@ -528,6 +529,7 @@ class GameScreen extends Screen<Input> {
 
   @override
   void resize(Vec size) {
+    rvipTermSize = size;
     // Grow the sidebar slowly because extra width here is slightly useful for
     // longer monster names but otherwise isn't as useful as making the stage
     // bigger. Make sure that the size increases by multiples of three so that

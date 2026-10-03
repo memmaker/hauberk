@@ -8,13 +8,14 @@ import 'package:hauberk/src/engine.dart';
 import 'package:hauberk/src/ui/game/game_screen.dart';
 import 'package:hauberk/src/ui/input.dart';
 import 'package:hauberk/src/ui/menu/main_menu_screen.dart';
+import 'package:hauberk/src/ui/rvip_tiles.dart';
 import 'package:malison/malison.dart';
 import 'package:malison/malison_web.dart';
 import 'package:piecemeal/piecemeal.dart';
 import 'package:web/web.dart' as web;
 
 final _fonts = <TerminalFont>[];
-late final UserInterface<Input> _ui;
+late final RvipUI _ui;
 late TerminalFont _font;
 
 final Set<Monster> _debugMonsters = {};
@@ -65,7 +66,8 @@ void main() {
   // Scale the terminal to fit the screen.
   web.window.addEventListener('resize', _resizeTerminal.toJS);
 
-  _ui = UserInterface<Input>(_font.terminal);
+  _ui = RvipUI(_font.terminal);
+  globalContext['rvipRedraw'] = (() => _ui.dirty()).toJS;
 
   ///     Key Normal                  Shift
   ///     Q   Quit (forfeit)          -
@@ -391,4 +393,32 @@ void _refreshDebugBoxes() {
 
   // Hack: Give the engine a chance to update.
   web.window.requestAnimationFrame(refresh.toJS);
+}
+
+/// RVIP: mirrors the screen stack (`rvipScreens`) so the stage panel knows
+/// whether the game screen is on top; hides the tile canvas on every change.
+class RvipUI extends UserInterface<Input> {
+  RvipUI(RenderableTerminal terminal) : super(terminal);
+
+  @override
+  void push(Screen<Input> screen) {
+    rvipScreens.add(screen);
+    rvipHide();
+    super.push(screen);
+  }
+
+  @override
+  void pop([Object? result]) {
+    rvipScreens.removeLast();
+    rvipHide();
+    super.pop(result);
+  }
+
+  @override
+  void goTo(Screen<Input> screen) {
+    rvipScreens.removeLast();
+    rvipScreens.add(screen);
+    rvipHide();
+    super.goTo(screen);
+  }
 }

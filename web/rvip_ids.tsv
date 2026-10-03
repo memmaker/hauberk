@@ -1,0 +1,317 @@
+breed	little brown spider	a	spider
+breed	gray spider	a	spider
+breed	spiderling	a	spider
+breed	giant spider	a	spider
+breed	brown bat	b	bat
+breed	giant bat	b	bat
+breed	cave bat	b	bat
+breed	mangy cur	c	canine
+breed	wild dog	c	canine
+breed	mongrel	c	canine
+breed	wolf	c	canine
+breed	varg	c	canine
+breed	Skoll	c	canine
+breed	Hati	c	canine
+breed	Fenrir	c	canine
+breed	juvenile forest dragon	d	dragon
+breed	juvenile brown dragon	d	dragon
+breed	juvenile blue dragon	d	dragon
+breed	juvenile white dragon	d	dragon
+breed	juvenile purple dragon	d	dragon
+breed	juvenile green dragon	d	dragon
+breed	juvenile silver dragon	d	dragon
+breed	juvenile red dragon	d	dragon
+breed	juvenile gold dragon	d	dragon
+breed	juvenile black dragon	d	dragon
+breed	juvenile ethereal dragon	d	dragon
+breed	forest dragon	d	dragon
+breed	brown dragon	d	dragon
+breed	blue dragon	d	dragon
+breed	white dragon	d	dragon
+breed	purple dragon	d	dragon
+breed	green dragon	d	dragon
+breed	silver dragon	d	dragon
+breed	red dragon	d	dragon
+breed	gold dragon	d	dragon
+breed	black dragon	d	dragon
+breed	ethereal dragon	d	dragon
+breed	lazy eye	e	eye
+breed	mad eye	e	eye
+breed	floating eye	e	eye
+breed	baleful eye	e	eye
+breed	malevolent eye	e	eye
+breed	murderous eye	e	eye
+breed	watcher	e	eye
+breed	stray cat	f	feline
+breed	goblin peon	g	goblin
+breed	goblin archer	g	goblin
+breed	goblin fighter	g	goblin
+breed	goblin warrior	g	goblin
+breed	goblin mage	g	goblin
+breed	goblin ranger	g	goblin
+breed	Erlkonig, the Goblin Prince	g	goblin
+breed	giant cockroach	i	bug
+breed	giant centipede	i	bug
+breed	firefly	i	fly
+breed	green jelly	j	jelly
+breed	green slime	j	jelly
+breed	frosty slime	j	jelly
+breed	mud slime	j	jelly
+breed	smoking slime	j	jelly
+breed	sparkling slime	j	jelly
+breed	caustic slime	j	jelly
+breed	virulent slime	j	jelly
+breed	ectoplasm	j	jelly
+breed	scurrilous imp	k	kobold
+breed	vexing imp	k	kobold
+breed	kobold	k	kobold
+breed	kobold shaman	k	kobold
+breed	kobold trickster	k	kobold
+breed	kobold priest	k	kobold
+breed	imp incanter	k	kobold
+breed	imp warlock	k	kobold
+breed	Feng	k	kobold
+breed	lizard guard	l	saurian
+breed	lizard protector	l	saurian
+breed	armored lizard	l	saurian
+breed	scaled guardian	l	saurian
+breed	saurian	l	saurian
+breed	orc	o	orc
+breed	orc brute	o	orc
+breed	orc soldier	o	orc
+breed	orc chieftain	o	orc
+breed	Harold the Misfortunate	p	human
+breed	hapless adventurer	p	human
+breed	simpering knave	p	human
+breed	decrepit mage	p	human
+breed	unlucky ranger	p	human
+breed	drunken priest	p	human
+breed	mouse	r	rodent
+breed	sewer rat	r	rodent
+breed	sickly rat	r	rodent
+breed	plague rat	r	rodent
+breed	giant rat	r	rodent
+breed	The Rat King	r	rodent
+breed	giant slug	s	slug
+breed	suppurating slug	s	slug
+breed	acidic slug	s	slug
+breed	choker	v	vine
+breed	nightshade	v	vine
+breed	creeper	v	vine
+breed	strangler	v	vine
+breed	blood worm	w	worm
+breed	fire worm	w	worm
+breed	giant earthworm	w	worm
+breed	giant cave worm	w	worm
+breed	bony hand	x	skeleton
+breed	bony arm	x	skeleton
+breed	severed skull	x	skeleton
+breed	decapitated skeleton	x	skeleton
+breed	armless skeleton	x	skeleton
+breed	one-armed skeleton	x	skeleton
+breed	skeleton	x	skeleton
+breed	skeleton warrior	x	skeleton
+breed	robed skeleton	x	skeleton
+breed	crow	B	bird
+breed	raven	B	bird
+breed	elder forest dragon	D	dragon
+breed	elder brown dragon	D	dragon
+breed	elder blue dragon	D	dragon
+breed	elder white dragon	D	dragon
+breed	elder purple dragon	D	dragon
+breed	elder green dragon	D	dragon
+breed	elder silver dragon	D	dragon
+breed	elder red dragon	D	dragon
+breed	elder gold dragon	D	dragon
+breed	elder black dragon	D	dragon
+breed	elder ethereal dragon	D	dragon
+breed	ancient forest dragon	D	dragon
+breed	ancient brown dragon	D	dragon
+breed	ancient blue dragon	D	dragon
+breed	ancient white dragon	D	dragon
+breed	ancient purple dragon	D	dragon
+breed	ancient green dragon	D	dragon
+breed	ancient silver dragon	D	dragon
+breed	ancient red dragon	D	dragon
+breed	ancient gold dragon	D	dragon
+breed	ancient black dragon	D	dragon
+breed	ancient ethereal dragon	D	dragon
+breed	forest sprite	F	fae
+breed	house sprite	F	fae
+breed	mischievous sprite	F	fae
+breed	Tink	F	fae
+breed	harpy	H	hybrid
+breed	griffin	H	hybrid
+breed	Nameless Unmaker	Q	magical
+breed	frog	R	herp
+breed	juvenile salamander	R	salamander
+breed	salamander	R	salamander
+breed	three-headed salamander	R	salamander
+breed	water snake	S	snake
+breed	brown snake	S	snake
+breed	cave snake	S	snake
+item	Rock	Ç	/
+item	Skull	ü	/
+item	Copper Coin	¢	/
+item	Bronze Coin	¢	/
+item	Silver Coin	¢	/
+item	Electrum Coin	¢	/
+item	Gold Coin	¢	/
+item	Platinum Coin	¢	/
+item	Copper Bar	$	/
+item	Bronze Bar	$	/
+item	Silver Bar	$	/
+item	Electrum Bar	$	/
+item	Gold Bar	$	/
+item	Platinum Bar	$	/
+item	Amethyst Shard	¢	/
+item	Uncut Amethyst	¢	/
+item	Faceted Amethyst	¢	/
+item	Sapphire Shard	¢	/
+item	Uncut Sapphire	¢	/
+item	Faceted Sapphire	¢	/
+item	Emerald Shard	¢	/
+item	Uncut Emerald	¢	/
+item	Faceted Emerald	¢	/
+item	Ruby Shard	¢	/
+item	Uncut Ruby	¢	/
+item	Faceted Ruby	¢	/
+item	Diamond Shard	¢	/
+item	Uncut Diamond	¢	/
+item	Faceted Diamond	¢	/
+item	Insect Wing	é	/
+item	Feather	é	/
+item	Stale Biscuit	¡	/
+item	Loaf of Bread	¡	/
+item	Chunk of Meat	¼	/
+item	Piece of Jerky	¼	/
+item	Tallow Candle	¬	hand/
+item	Wax Candle	¬	hand/
+item	Oil Lamp	¬	hand/
+item	Torch	¬	hand/
+item	Lantern	¬	hand/
+item	Soothing Balm	ç	/
+item	Mending Salve	ç	/
+item	Healing Poultice	ç	/
+item	Potion of Amelioration	ç	/
+item	Potion of Rejuvenation	ç	/
+item	Antidote	ç	/
+item	Salve of Heat Resistance	ê	/
+item	Salve of Cold Resistance	ê	/
+item	Salve of Light Resistance	ê	/
+item	Salve of Wind Resistance	ê	/
+item	Salve of Lightning Resistance	ê	/
+item	Salve of Darkness Resistance	ê	/
+item	Salve of Earth Resistance	ê	/
+item	Salve of Water Resistance	ê	/
+item	Salve of Acid Resistance	ê	/
+item	Salve of Poison Resistance	ê	/
+item	Salve of Death Resistance	ê	/
+item	Potion of Quickness	ë	/
+item	Potion of Alacrity	ë	/
+item	Potion of Speed	ë	/
+item	Bottled Wind	è	/
+item	Bottled Ice	è	/
+item	Bottled Fire	è	/
+item	Bottled Ocean	è	/
+item	Bottled Poison	è	/
+item	Bottled Earth	è	/
+item	Bottled Lightning	è	/
+item	Bottled Acid	è	/
+item	Bottled Shadow	è	/
+item	Bottled Radiance	è	/
+item	Bottled Spirit	è	/
+item	Scroll of Sidestepping	â	/
+item	Scroll of Phasing	â	/
+item	Scroll of Teleportation	â	/
+item	Scroll of Disappearing	â	/
+item	Scroll of Find Nearby Escape	ä	/
+item	Scroll of Locate Escape	ä	/
+item	Scroll of Find Nearby Items	ä	/
+item	Scroll of Item Detection	ä	/
+item	Scroll of Detect Nearby	ä	/
+item	Scroll of Detection	ä	/
+item	Scroll of Sense Nearby Monsters	ä	/
+item	Scroll of Sense Monsters	ä	/
+item	Scroll of Perceive Monsters	ä	/
+item	Scroll of Telepathy	ä	/
+item	Adventurer's Map	à	/
+item	Explorer's Map	à	/
+item	Cartographer's Map	à	/
+item	Wizard's Map	à	/
+item	Ring of Wisdom	ï	ring/
+item	Stick	á	hand/club
+item	Cudgel	á	hand/club
+item	Club	á	hand/club
+item	Walking Stick	í	hand/staff
+item	Staff	í	hand/staff
+item	Quarterstaff	í	hand/staff
+item	Hammer	ó	hand/hammer
+item	Mattock	ó	hand/hammer
+item	War Hammer	ó	hand/hammer
+item	Morningstar	ú	hand/mace
+item	Mace	ú	hand/mace
+item	Whip	ñ	hand/whip
+item	Chain Whip	ñ	hand/whip
+item	Flail	ñ	hand/whip
+item	Knife	Ñ	hand/dagger
+item	Dagger	Ñ	hand/dagger
+item	Dirk	Ñ	hand/dagger
+item	Stiletto	Ñ	hand/dagger
+item	Rondel	Ñ	hand/dagger
+item	Baselard	Ñ	hand/dagger
+item	Mercygiver	Ñ	hand/dagger
+item	Rapier	ª	hand/sword
+item	Shortsword	ª	hand/sword
+item	Scimitar	ª	hand/sword
+item	Cutlass	ª	hand/sword
+item	Falchion	ª	hand/sword
+item	Pointed Stick	º	hand/spear
+item	Spear	º	hand/spear
+item	Angon	º	hand/spear
+item	Lance	º	hand/polearm
+item	Partisan	º	hand/polearm
+item	Hatchet	¿	hand/axe
+item	Axe	¿	hand/axe
+item	Valaska	¿	hand/axe
+item	Battleaxe	¿	hand/axe
+item	Short Bow	⌐	hand/bow
+item	Longbow	⌐	hand/bow
+item	Crossbow	⌐	hand/bow
+item	Leather Cap	É	helm/
+item	Chainmail Coif	É	helm/
+item	Steel Cap	É	helm/
+item	Visored Helm	É	helm/
+item	Great Helm	É	helm/
+item	Robe	ô	body/
+item	Lined Robe	ô	body/
+item	Cloth Shirt	ö	body/
+item	Leather Shirt	ö	body/
+item	Jerkin	ö	body/
+item	Leather Armor	ö	body/
+item	Padded Armor	ö	body/
+item	Studded Armor	ö	body/
+item	Mail Hauberk	ò	body/
+item	Scale Mail	ò	body/
+item	Plated Mail	û	body/
+item	Brigandine	û	body/
+item	Breastplate	û	body/
+item	Plate Armor	û	body/
+item	Cloak	Æ	cloak/
+item	Fur Cloak	Æ	cloak/
+item	Spidersilk Cloak	Æ	cloak/
+item	Gloves	Å	gloves/
+item	Bracers	Å	gloves/
+item	Gauntlets	Å	gloves/
+item	Buckler	æ	hand/
+item	Leather Shield	æ	hand/
+item	Targe	æ	hand/
+item	Roundel	æ	hand/
+item	Steel Shield	æ	hand/
+item	Kite Shield	æ	hand/
+item	Lantern Shield	æ	hand/
+item	Sandals	ì	boots/
+item	Shoes	ì	boots/
+item	Boots	Ä	boots/
+item	Plated Boots	Ä	boots/
+item	Greaves	Ä	boots/
