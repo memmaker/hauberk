@@ -4,11 +4,17 @@ import "help_dialog.dart";
 const Map<String, List<HelpLine>> helpChapters = {
   "Quick Reference": [
     HelpLine(color: UIHue.header, "Quick Reference"),
-    HelpLine(color: UIHue.header, "════════════════════════════════════════════════════════"),
+    HelpLine(
+      color: UIHue.header,
+      "════════════════════════════════════════════════════════",
+    ),
     HelpLine(""),
     HelpLine(""),
     HelpLine(color: UIHue.header, "Movement"),
-    HelpLine(color: UIHue.header, "────────────────────────────────────────────────────────"),
+    HelpLine(
+      color: UIHue.header,
+      "────────────────────────────────────────────────────────",
+    ),
     HelpLine("There are two sets of direction keys:"),
     HelpLine(""),
     HelpLine("They can be combined with modifier keys like so:"),
@@ -16,11 +22,17 @@ const Map<String, List<HelpLine>> helpChapters = {
     HelpLine(""),
     HelpLine(""),
     HelpLine(color: UIHue.header, "Other commands"),
-    HelpLine(color: UIHue.header, "────────────────────────────────────────────────────────"),
+    HelpLine(
+      color: UIHue.header,
+      "────────────────────────────────────────────────────────",
+    ),
   ],
   "Getting Started": [
     HelpLine(color: UIHue.header, "Getting Started"),
-    HelpLine(color: UIHue.header, "════════════════════════════════════════════════════════"),
+    HelpLine(
+      color: UIHue.header,
+      "════════════════════════════════════════════════════════",
+    ),
     HelpLine("TODO: This is all horrendously out of date."),
     HelpLine(""),
     HelpLine(""),
@@ -44,7 +56,10 @@ const Map<String, List<HelpLine>> helpChapters = {
     HelpLine(""),
     HelpLine(""),
     HelpLine(color: UIHue.header, "Input"),
-    HelpLine(color: UIHue.header, "────────────────────────────────────────────────────────"),
+    HelpLine(
+      color: UIHue.header,
+      "────────────────────────────────────────────────────────",
+    ),
     HelpLine("Hauberk is played using your keyboard, the fixie of"),
     HelpLine(""),
     HelpLine("input devices. A lot of input is directional. Arrow keys"),
@@ -106,7 +121,10 @@ const Map<String, List<HelpLine>> helpChapters = {
     HelpLine(""),
     HelpLine(""),
     HelpLine(color: UIHue.header, "A Hero Awakens"),
-    HelpLine(color: UIHue.header, "────────────────────────────────────────────────────────"),
+    HelpLine(
+      color: UIHue.header,
+      "────────────────────────────────────────────────────────",
+    ),
     HelpLine("To play, you need an avatar in the game world to live"),
     HelpLine(""),
     HelpLine("(and die!) vicariously through. On the Main Menu Screen,"),
@@ -224,7 +242,10 @@ const Map<String, List<HelpLine>> helpChapters = {
     HelpLine(""),
     HelpLine(""),
     HelpLine(color: UIHue.header, "The Dungeon Awaits"),
-    HelpLine(color: UIHue.header, "────────────────────────────────────────────────────────"),
+    HelpLine(
+      color: UIHue.header,
+      "────────────────────────────────────────────────────────",
+    ),
     HelpLine("Now that your hero is alive and ready, it's time to slay"),
     HelpLine(""),
     HelpLine("some beasts."),

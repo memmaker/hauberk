@@ -24,6 +24,7 @@ void renderItems(
   bool capitalize = false,
   bool showPrices = false,
   Item? inspectedItem,
+  Item? cursorItem,
   bool inspectorOnRight = false,
   bool Function(Item item) canSelect = _defaultCanSelect,
   int? Function(Item item) getPrice = _defaultGetPrice,
@@ -129,7 +130,14 @@ void renderItems(
       _ when canSelectAny => UIHue.disabled,
       _ => UIHue.text,
     };
-    terminal.writeAt(x + 2, y, name, textColor);
+    // RVIP: cursor row gets a background.
+    terminal.writeAt(
+      x + 2,
+      y,
+      item == cursorItem ? name.padRight(nameWidth) : name,
+      textColor,
+      item == cursorItem ? darkerCoolGray : null,
+    );
 
     // Draw the inspector for this item.
     if (item == inspectedItem) {

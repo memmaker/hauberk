@@ -34,6 +34,14 @@ abstract class ItemDialog extends Screen<Input> {
   /// The current item being inspected or `null` if there is none.
   Item? _inspected;
 
+  /// RVIP: slot index of the cursor in the current list.
+  int _cursor = 0;
+
+  ItemLocation get location => _location;
+
+  /// RVIP: query shown while Shift is held.
+  String get shiftQuery => "Inspect which item?";
+
   @override
   bool get isTransparent => true;
 
@@ -136,6 +144,22 @@ abstract class ItemDialog extends Screen<Input> {
     } else if (input == Input.cancel) {
       ui.pop();
       return true;
+    } else if (!rvipLetterKey) {
+      // RVIP: cursor keys (letters bound to directions stay item letters).
+      switch (input) {
+        case Input.n:
+          _moveCursor(-1);
+          return true;
+        case Input.s:
+          _moveCursor(1);
+          return true;
+        case Input.w || Input.e when canSwitchLocations:
+          _advanceLocation(input == Input.w ? -1 : 1);
+          return true;
+        case Input.ok:
+          if (_cursorItem case var item?) rvipMenu(item);
+          return true;
+      }
     }
 
     return false;
@@ -161,14 +185,30 @@ abstract class ItemDialog extends Screen<Input> {
     if (_selectedItem != null) return false;
 
     if (keyCode >= KeyCode.a && keyCode <= KeyCode.z) {
-      _selectItem(keyCode - KeyCode.a);
+      _selectItem(keyCode - KeyCode.a, shift: shift);
       return true;
     }
 
     if (keyCode == KeyCode.tab && !_shiftDown && canSwitchLocations) {
       _advanceLocation(shift ? -1 : 1);
-      dirty();
       return true;
+    }
+
+    // RVIP: numpad 0 / . close, + main action, - drop, * inspect.
+    var item = _cursorItem;
+    switch (keyCode) {
+      case KeyCode.numpad0 || KeyCode.numpadDecimal:
+        ui.pop();
+        return true;
+      case KeyCode.numpadAdd when item != null:
+        rvipMain(item);
+        return true;
+      case KeyCode.numpadSubtract when item != null:
+        rvipDrop(item);
+        return true;
+      case KeyCode.numpadMultiply when item != null:
+        rvipInspect(item);
+        return true;
     }
 
     return false;
@@ -252,13 +292,14 @@ abstract class ItemDialog extends Screen<Input> {
       showPrices: showPrices,
       inspectedItem: _inspected,
       canSelect: _canSelect,
+      cursorItem: _selectedItem == null ? _cursorItem : null,
       getPrice: getPrice,
     );
 
     String queryText;
     if (_selectedItem == null) {
       if (_shiftDown) {
-        queryText = "Inspect which item?";
+        queryText = shiftQuery;
       } else {
         queryText = query(_location);
       }
@@ -298,30 +339,68 @@ abstract class ItemDialog extends Screen<Input> {
     return canSelect(item);
   }
 
-  void _selectItem(int index) {
+  void _selectItem(int index, {bool shift = false}) {
     var items = this.items.slots.toList();
     if (index >= items.length) return;
 
     // Can't select an empty equipment slot.
     var item = items[index];
     if (item == null) return;
+    _cursor = index;
 
-    if (_shiftDown) {
-      _inspected = item;
+    if (rvipCtrl) {
+      rvipInspect(item);
+    } else if (_shiftDown || shift) {
+      rvipShiftLetter(item);
+    } else {
+      rvipMain(item);
+    }
+  }
+
+  /// RVIP: item hooks. Letter / numpad + = main action, Enter / numpad 5 =
+  /// menu (the command itself here), Shift+letter / numpad - = drop.
+  void rvipMain(Item item) => rvipChoose(item, _location);
+  void rvipMenu(Item item) => rvipMain(item);
+  void rvipShiftLetter(Item item) => rvipInspect(item);
+  void rvipDrop(Item item) {}
+
+  void rvipInspect(Item item) {
+    _inspected = _inspected == item ? null : item;
+    dirty();
+  }
+
+  /// RVIP: choose [item] at [location] as if its letter was typed (also used
+  /// to preselect an item right after `ui.goTo(dialog)`).
+  void rvipChoose(Item item, ItemLocation location) {
+    _location = location;
+    if (!canSelect(item)) return;
+
+    if (item.count > 1 && needsCount) {
+      _selectedItem = item;
+      _inspected = null;
+      _count = item.count;
       dirty();
     } else {
-      if (!canSelect(item)) return;
+      // Either we don't need a count or there's only one item.
+      selectItem(item, 1, _location);
+    }
+  }
 
-      if (item.count > 1 && needsCount) {
-        _selectedItem = item;
-        _inspected = null;
-        _count = item.count;
-        dirty();
-      } else {
-        // Either we don't need a count or there's only one item.
-        selectItem(item, 1, _location);
+  Item? get _cursorItem {
+    var slots = items.slots.toList();
+    return _cursor < slots.length ? slots[_cursor] : null;
+  }
+
+  void _moveCursor(int d) {
+    var slots = items.slots.toList();
+    for (var i = 1; i <= slots.length; i++) {
+      var next = (_cursor + d * i) % slots.length;
+      if (slots[next] != null) {
+        _cursor = next;
+        break;
       }
     }
+    dirty();
   }
 
   /// Rotates through the viewable locations the player can select an item from.
@@ -329,5 +408,8 @@ abstract class ItemDialog extends Screen<Input> {
     var index = allowedLocations.indexOf(_location);
     var count = allowedLocations.length;
     _location = allowedLocations[(index + count + offset) % count];
+    _cursor = items.slots.toList().indexWhere((item) => item != null);
+    if (_cursor < 0) _cursor = 0;
+    dirty();
   }
 }

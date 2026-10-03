@@ -98,7 +98,7 @@ void main() {
   ///     X   Swap (item)             -
   ///     C   Operate (door, chest)   -
   ///     V   -                       -
-  ///     B   -                       -
+  ///     B   Inventory (RVIP)        -
   ///     N   -                       -
   ///     M   -                       -
   ///     ,   Walk SW                 Run SW
@@ -108,6 +108,17 @@ void main() {
   // Set up the keyPress.
   _ui.keyPress.bind(Input.ok, KeyCode.enter);
   _ui.keyPress.bind(Input.cancel, KeyCode.escape);
+  _ui.keyPress.bind(Input.inventory, KeyCode.b);
+
+  // RVIP: record the raw key before Malison's body listener maps it.
+  web.document.addEventListener(
+    'keydown',
+    ((web.KeyboardEvent e) {
+      rvipKeyCode = e.location == 3 ? 0 : e.keyCode;
+      rvipCtrl = e.ctrlKey;
+    }).toJS,
+    true.toJS,
+  );
   _ui.keyPress.bind(Input.cancel, KeyCode.backtick);
   _ui.keyPress.bind(Input.forfeit, KeyCode.f, shift: true);
   _ui.keyPress.bind(Input.quit, KeyCode.q);

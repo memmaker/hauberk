@@ -48,6 +48,9 @@ class Input {
   /// Rest repeatedly.
   static const rest = Input("rest");
 
+  /// RVIP: inventory list with cursor and item menus.
+  static const inventory = Input("inventory");
+
   /// RVIP: auto-explore.
   static const explore = Input("explore");
 
@@ -82,3 +85,11 @@ class Input {
   @override
   String toString() => "Input($name)";
 }
+
+/// RVIP: raw key code and Ctrl state of the current keydown, recorded by a
+/// capture-phase listener in `web/main.dart` before Malison maps the key.
+/// Lets screens tell Enter from `l` and letters from bound direction keys.
+int rvipKeyCode = 0;
+bool rvipCtrl = false;
+bool get rvipLetterKey => rvipKeyCode >= 65 && rvipKeyCode <= 90;
+bool get rvipEnterKey => rvipKeyCode == 13;

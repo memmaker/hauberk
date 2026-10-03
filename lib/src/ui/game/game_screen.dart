@@ -18,6 +18,7 @@ import '../info/info_dialog.dart';
 import '../input.dart';
 import '../item/drop_dialog.dart';
 import '../item/equip_dialog.dart';
+import '../item/inventory_dialog.dart';
 import '../item/item_dialog.dart';
 import '../item/pick_up_dialog.dart';
 import '../item/town_screen.dart';
@@ -29,6 +30,7 @@ import '../panel/stage_panel.dart';
 import '../popup/exit_popup.dart';
 import '../popup/forfeit_popup.dart';
 import '../popup/select_depth_popup.dart';
+import '../rvip_menu.dart';
 import '../storage.dart';
 import '../wizard_dialog.dart';
 import 'direction_dialog.dart';
@@ -57,6 +59,77 @@ class GameScreen extends Screen<Input> {
   int _pause = 0;
 
   int _logTotal = 0;
+
+  /// RVIP: reopen the inventory after an item action from it.
+  bool rvipReopenInventory = false;
+
+  /// RVIP: Enter command menu, grouped like the quick reference.
+  static const _commands = [
+    RvipEntry.header("Items"),
+    RvipEntry("b", "Inventory", Input.inventory, keyCode: KeyCode.b),
+    RvipEntry("u", "Use item", Input.use, keyCode: KeyCode.u),
+    RvipEntry("e", "Equip / unequip", Input.equip, keyCode: KeyCode.e),
+    RvipEntry("d", "Drop item", Input.drop, keyCode: KeyCode.d),
+    RvipEntry("t", "Throw item", Input.toss, keyCode: KeyCode.t),
+    RvipEntry("g", "Pick up", Input.pickUp, keyCode: KeyCode.g),
+    RvipEntry("x", "Swap to last unequipped", Input.swap, keyCode: KeyCode.x),
+    RvipEntry.header("Actions"),
+    RvipEntry(
+      "Shift-H",
+      "Explore",
+      Input.explore,
+      keyCode: KeyCode.h,
+      shift: true,
+    ),
+    RvipEntry(
+      "q",
+      "Stairs: walk to / take exit",
+      Input.quit,
+      keyCode: KeyCode.q,
+    ),
+    RvipEntry("c", "Operate door, chest", Input.operate, keyCode: KeyCode.c),
+    RvipEntry("l", "Rest one turn", Input.ok, keyCode: KeyCode.l),
+    RvipEntry(
+      "Shift-L",
+      "Rest until healed",
+      Input.rest,
+      keyCode: KeyCode.l,
+      shift: true,
+    ),
+    RvipEntry("a", "Use ability", Input.useAbility, keyCode: KeyCode.a),
+    RvipEntry("Alt-L", "Fire last ability", Input.fire),
+    RvipEntry.header("Hero"),
+    RvipEntry(
+      "Shift-A",
+      "Hero info",
+      Input.heroInfo,
+      keyCode: KeyCode.a,
+      shift: true,
+    ),
+    RvipEntry(
+      "Shift-S",
+      "Abilities",
+      Input.editSpells,
+      keyCode: KeyCode.s,
+      shift: true,
+    ),
+    RvipEntry(
+      "Shift-E",
+      "Spend experience",
+      Input.spendExperience,
+      keyCode: KeyCode.e,
+      shift: true,
+    ),
+    RvipEntry.header("Game"),
+    RvipEntry("h", "Help", Input.help, keyCode: KeyCode.h),
+    RvipEntry(
+      "Shift-F",
+      "Forfeit level",
+      Input.forfeit,
+      keyCode: KeyCode.f,
+      shift: true,
+    ),
+  ];
 
   Actor? _targetActor;
   Vec? _target;
@@ -158,6 +231,10 @@ class GameScreen extends Screen<Input> {
 
     for (var _ in game.generate()) {}
 
+    // RVIP: the hero was saved before the starting gear was added; save
+    // again so a reload keeps it (upstream bug).
+    if (newHero) storage.save();
+
     return GameScreen(storage, game);
   }
 
@@ -176,7 +253,7 @@ class GameScreen extends Screen<Input> {
 
   @override
   bool keyDown(int keyCode, {required bool shift, required bool alt}) {
-    if (keyCode == KeyCode.shift || keyCode == 18 /* Alt */) return false;
+    if (keyCode == KeyCode.shift || keyCode == 18 /* Alt */ ) return false;
     return _stopWalk();
   }
 
@@ -185,7 +262,15 @@ class GameScreen extends Screen<Input> {
     Action? action;
     if (_stopWalk()) return true;
 
+    // RVIP: Enter (not l / numpad 5) opens the command menu.
+    if (input == Input.ok && rvipEnterKey) {
+      ui.push(RvipMenu("Commands", _commands));
+      return true;
+    }
+
     switch (input) {
+      case Input.inventory:
+        ui.push(InventoryDialog(this));
       case Input.quit:
         var portal = game.stage[game.hero.pos].portal;
         if (portal == TilePortals.exit) {
@@ -340,6 +425,10 @@ class GameScreen extends Screen<Input> {
     }
 
     switch ((popped, result)) {
+      case (RvipMenu(), Input input):
+        rvipKeyCode = 0;
+        handleInput(input);
+
       case (ExitPopup(), _):
         // TODO: Hero should start next to dungeon entrance.
 
@@ -406,6 +495,15 @@ class GameScreen extends Screen<Input> {
     if (_pause > 0) {
       _pause--;
       return;
+    }
+
+    // RVIP: back to the inventory once the item action is done.
+    if (rvipReopenInventory && game.hero.needsInput(game)) {
+      rvipReopenInventory = false;
+      if (_stagePanel.visibleMonsters.isEmpty) {
+        ui.push(InventoryDialog(this));
+        return;
+      }
     }
 
     var result = game.update();
